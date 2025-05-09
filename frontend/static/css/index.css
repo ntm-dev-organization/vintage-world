@@ -1,0 +1,61 @@
+body {
+    color: black;
+}
+
+.button_tiktok {
+  position: relative;
+  width: 130px;
+  height: 35px;
+  border-radius: 30px;
+  background-color: white;
+  border: 1px #111111 solid;
+  overflow: hidden;
+}
+
+.text1-tiktok {
+  font-size: 15px;
+  font-weight: 600;
+  margin-left: 22%;
+}
+
+.text2-tiktok {
+  position: absolute;
+  top: 25%;
+  left: -50px;
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+}
+
+.icon_tiktok {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 0.5s;
+}
+
+.icon_tiktok::before {
+  position: absolute;
+  left: -100px;
+  top: 0;
+  z-index: -1;
+  content: '';
+  width: 130px;
+  height: 33px;
+  border-radius: 30px;
+  background-color: #111111;
+}
+
+.button_tiktok:hover .icon_tiktok {
+  transform: translateX(96px);
+  transition: transform 0.5s;
+}
+
+.button_tiktok:hover .text2-tiktok {
+  transform: translateX(100px);
+  transition: transform 0.6s;
+}
+
+.button_tiktok:active {
+  transform: scale(1.03);
+}
