@@ -1,7 +1,7 @@
 from quart import Quart
 import asyncio
 from dotenv import load_dotenv
-from routes import routes
+from backend.api.routes import routes
 
 load_dotenv()
 

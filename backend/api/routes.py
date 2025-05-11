@@ -11,7 +11,6 @@ routes = Blueprint('routes', __name__)
 async def index():
     return await render_template("index.html")
 
-
 @routes.route('/frontend/static/<path:filename>')
 async def static_files(filename):
     return await send_from_directory('frontend/static', filename)
