@@ -1,62 +1,71 @@
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+ .tagesschrift-regular {
+  font-family: "Tagesschrift", system-ui;
+  font-weight: 300;
+  font-style: normal;
+}
 
-        .tagesschrift-regular {
-            font-family: "Tagesschrift", system-ui;
-            font-weight: 300;
-            font-style: normal;
-        } 
-
-        body {
-            background-color: #0f0f0f;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        main {
-            text-align: center;
-            max-width: 600px;
-            width: 70%;
-            padding: 20px;
-        }
-
-        .logo {
-            margin-bottom: 100px;
-        }
-
-        .logo img {
-            width: 120px;
-            height: auto;
-        }
+.prata-regular {
+  font-family: "Prata", serif;
+  font-weight: 400;
+  font-style: normal;
+}
 
 
-        .center h1 {
-            font-size: 1.8rem;
-            margin: 10px 0;
-            letter-spacing: 1px;
-        }
+body {
+  background-color: #0f0f0f;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
 
-        .center h1 a {
-            text-decoration: none;
-            color: #756c48;
-            font-family: 'Tagesschrift';
-        }
+main {
+  text-align: center;
+  max-width: 600px;
+  width: 70%;
+  padding: 20px;
+}
 
-        .bold {
-            font-weight: 900;
-        }
+.logo {
+  margin-bottom: 100px;
+}
 
-        .center h1 a:hover {
-            text-decoration: none;
-            color: #767166;
-            transform: scale(1.1);
-        }
+.logo img {
+  width: 120px;
+  height: auto;
+}
+
+.center h1 {
+  font-size: 1.8rem;
+  margin: 10px 0;
+  letter-spacing: 1px;
+}
+
+.bold .bold_a {
+  font-weight: 900;
+  color: #928862;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+.center h1 a {
+  font-weight: 700;
+  text-decoration: none;
+  color: #756c48;
+  font-family: 'Comic Neue';
+}
+
+.center h1 a:hover {
+  text-decoration: none;
+  color: #767166;
+  transform: scale(1.1);
+}
 
 .background {
     position: fixed;
@@ -182,10 +191,6 @@
   width: 50px;
   transition-duration: .3s;
   transform: translateY(85%);
-  -webkit-transform: translateY(85%);
-  -moz-transform: translateY(85%);
-  -ms-transform: translateY(85%);
-  -o-transform: translateY(85%);
 }
 
 .button_tiktok::before {
