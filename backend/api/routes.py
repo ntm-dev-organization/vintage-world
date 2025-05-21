@@ -19,6 +19,10 @@ async def resell():
 async def yourself():
     return await render_template("yourself.html")
 
+@routes.route("/soon")
+async def soon():
+    return await render_template("soon.html")
+
 @routes.route('/frontend/static/<path:filename>')
 async def static_files(filename):
     return await send_from_directory('frontend/static', filename)

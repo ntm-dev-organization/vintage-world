@@ -159,18 +159,14 @@ header::after {
     color: #bbb;
 }
 
-/* Responsividade extra */
-@media (max-width: 600px) {
-    header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
+@media (min-width: 768px) {
+  header {
+    padding: 0 60px;
+  }
 
-    .icons {
-        justify-content: flex-start;
-        gap: 1rem;
-    }
+  .icons{
+    width: 100px;
+  }
 }
 
 
@@ -186,15 +182,13 @@ header::after {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 100;
-
+  z-index: 998;
   opacity: 0;
   transform: translateY(-20px);
   pointer-events: none;
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-/* Estado quando o menu está visível */
 .full-screen-menu.menu-open {
   opacity: 1;
   transform: translateY(0);
@@ -214,13 +208,13 @@ header::after {
 }
 
 .menu-items li a {
-  color: white;
+  color: #ffffff;
   font-size: 2rem;
   text-decoration: none;
   transition: color 0.2s;
 }
 .menu-items li a:hover {
-  color: #ccc;
+  color: #767166;
 }
 
 .menu-footer {

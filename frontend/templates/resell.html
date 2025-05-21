@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+    <!--  Made by NTM DEV  https://ntmdev.me  or  https://discord.gg/aKpwVrXgyx  -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,15 +26,15 @@
             <nav class="full-screen-menu hidden">
             <ul class="menu-items">
                 <li><a href="/">Início</a></li>
-                <li><a href="/produtos">Produtos</a></li>
-                <li><a href="/sobre">Sobre</a></li>
-                <li><a href="/contato">Contato</a></li>
+                <li><a href="/soon">Produtos</a></li>
+                <li><a href="/soon ">Sobre</a></li>
+                <li><a href="/soon">Contato</a></li>
             </ul>
 
             <footer class="menu-footer">
-                <a href="https://instagram.com" target="_blank">Instagram</a>
+                <a href="https://www.instagram.com/v8ntage_world/" target="_blank">Instagram</a>
                 <a href="">|</a>
-                <a href="https://facebook.com" target="_blank">TikTok</a>
+                <a href="/soon" target="_blank">TikTok</a>
             </footer>
             </nav>
 
@@ -54,6 +55,7 @@
                 </div>
             </div>
         </header>
+
         <div class="shop">
             <div class="cards">
                 <div class="card">
@@ -130,5 +132,19 @@
     const menu = document.querySelector('.full-screen-menu');
     menu.classList.toggle('menu-open');
   }
+</script>
+<script>
+        document.addEventListener("DOMContentLoaded", () => {
+        const cart = document.querySelector(".carrinho");
+        const account = document.querySelector(".conta");
+
+        cart.onclick = () => {
+            window.open("/cart", "_blank");
+        };
+
+        account.onclick = () => {
+            window.open("/account", "_blank");
+        };
+    });
 </script>
 </html>
