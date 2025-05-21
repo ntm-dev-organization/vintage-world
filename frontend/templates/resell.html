@@ -16,11 +16,26 @@
 <body>
     <main>
         <header>
-            <div class="hamburguer-menu">
+            <div class="hamburguer-menu" onclick="toggleMenu()">
                 <span></span>
                 <span></span>
                 <span></span>
             </div>
+
+            <nav class="full-screen-menu hidden">
+            <ul class="menu-items">
+                <li><a href="/">Início</a></li>
+                <li><a href="/produtos">Produtos</a></li>
+                <li><a href="/sobre">Sobre</a></li>
+                <li><a href="/contato">Contato</a></li>
+            </ul>
+
+            <footer class="menu-footer">
+                <a href="https://instagram.com" target="_blank">Instagram</a>
+                <a href="">|</a>
+                <a href="https://facebook.com" target="_blank">TikTok</a>
+            </footer>
+            </nav>
 
             <div class="logo">
                 <img src="/frontend/static/images/logo.png" alt="logo">
@@ -105,9 +120,15 @@
         </div>
     </main>
 </body>
+
 <script>
     document.querySelector('.hamburguer-menu').addEventListener('click', () => {
         document.querySelector('.hamburguer-menu').classList.toggle('open');
     });
+
+  function toggleMenu() {
+    const menu = document.querySelector('.full-screen-menu');
+    menu.classList.toggle('menu-open');
+  }
 </script>
 </html>
