@@ -50,7 +50,7 @@ main {
 .bold .bold_a {
   font-weight: 900;
   color: #928862;
-  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Comic Neue';
 }
 
 
@@ -142,6 +142,7 @@ main {
   top: -20px;
   content: "Instagram";
   color: white;
+  font-family: 'Comic Neue';
   transition-duration: .3s;
   font-size: 2px;
 }
@@ -197,6 +198,7 @@ main {
   position: absolute;
   top: -20px;
   content: "TikTok";
+  font-family: 'Comic Neue';
   color: white;
   transition-duration: .3s;
   font-size: 2px;
