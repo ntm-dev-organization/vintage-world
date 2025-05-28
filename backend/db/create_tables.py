@@ -1,10 +1,9 @@
 import asyncio
-from backend.db.database import engine  # o teu engine async
-from backend.db.models import Base     # o Base do SQLAlchemy onde estão os modelos
+from backend.db.database import engine
+from backend.db.models import Base
 
 async def criar_tabelas():
     async with engine.begin() as conn:
-        # Esta linha cria as tabelas no banco se não existirem
         await conn.run_sync(Base.metadata.create_all)
 
     print("Tabelas criadas com sucesso!")
