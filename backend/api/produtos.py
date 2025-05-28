@@ -1,13 +1,14 @@
 from quart import Blueprint, request, redirect
 import os
-import json
+from sqlalchemy.future import select
+from sqlalchemy.exc import SQLAlchemyError
+from backend.db.database import async_session
+from backend.db.models import Produto
 
 produtos_api = Blueprint("produtos_api", __name__)
+
 UPLOAD_FOLDER = "frontend/static/uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-ADMIN_PASSWORD = "senha123"
-
-DB_PATH = "backend/db/products.json"
 
 @produtos_api.route("/api/produtos/adicionar", methods=["POST"])
 async def adicionar_produto():
@@ -35,40 +36,35 @@ async def adicionar_produto():
             else:
                 secundarias.append(filename)
 
-    produto = {
-        "name": name,
-        "price": price,
-        "sizes": sizes,
-        "category": category,
-        "stripe_num": stripe_num,
-        "stock": stock,
-        "principal": principal,
-        "secundarias": secundarias
-    }
+    novo_produto = Produto(
+        name=name,
+        price=price,
+        sizes=sizes,
+        category=category,
+        stripe_num=stripe_num,
+        stock=stock,
+        principal=principal,
+        secundarias=secundarias
+    )
 
-    if os.path.exists(DB_PATH):
-        with open(DB_PATH, "r", encoding="utf-8") as f:
-            try:
-                produtos = json.load(f)
-            except json.JSONDecodeError:
-                produtos = []
-    else:
-        produtos = []
-
-    produtos.append(produto)
-
-    with open(DB_PATH, "w", encoding="utf-8") as f:
-        json.dump(produtos, f, indent=2, ensure_ascii=False)
+    async with async_session() as session:
+        try:
+            session.add(novo_produto)
+            await session.commit()
+        except SQLAlchemyError as e:
+            await session.rollback()
+            print("Erro ao guardar no DB:", e)
+            return {"error": "Erro ao guardar no banco de dados"}, 500
 
     return redirect("/admin")
 
 
-def listar_produtos():
-    if not os.path.exists(DB_PATH) or os.path.getsize(DB_PATH) == 0:
-        return []
-
-    with open(DB_PATH, "r", encoding="utf-8") as f:
+async def listar_produtos():
+    async with async_session() as session:
         try:
-            return json.load(f)
-        except json.JSONDecodeError:
+            result = await session.execute(select(Produto))
+            produtos = result.scalars().all()
+            return produtos
+        except SQLAlchemyError as e:
+            print("Erro ao listar produtos:", e)
             return []

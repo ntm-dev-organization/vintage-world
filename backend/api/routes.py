@@ -1,6 +1,7 @@
 from quart import Quart, redirect, request, session, render_template, send_from_directory, url_for, Blueprint
 from dotenv import load_dotenv
 from backend.api.produtos import listar_produtos
+import os
 
 load_dotenv()
 
@@ -29,7 +30,7 @@ async def static_files(filename):
 
 #API
 
-ADMIN_PASSWORD = "senha123"
+ADMIN_PASSWORD = os.getenv("password")
 
 @routes.route("/admin/login", methods=["GET", "POST"])
 async def admin_login():
@@ -51,7 +52,7 @@ async def admin_painel():
     if not session.get("admin_logged_in"):
         return redirect(url_for("routes.admin_login"))
 
-    produtos = listar_produtos()
+    produtos = await listar_produtos()
     return await render_template("admin.html", produtos=produtos)
 
 @routes.route("/admin/logout")
