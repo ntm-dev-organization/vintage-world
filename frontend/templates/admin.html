@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Painel de Administração | Vintage World</title>
+  <link rel="shortcut icon" href="/frontend/static/images/logo.png" type="image/x-icon">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    function showTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+    }
+
+    function abrirFormularioEdicao(produto) {
+      showTab('editar');
+      document.getElementById('formEditarProduto').scrollIntoView({ behavior: 'smooth' });
+
+      document.getElementById('produtoId').value = produto.id;
+      document.getElementById('produtoName').value = produto.name;
+      document.getElementById('produtoPrice').value = produto.price;
+      document.getElementById('produtoSize').value = produto.size;
+    }
+
+    function fecharFormularioEdicao() {
+      document.getElementById('formEditarProduto').reset();
+    }
+  </script>
+</head>
+<body class="bg-gray-100 p-4 sm:p-6">
+
+  <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-6">
+    <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Painel de Administração</h1>
+
+    <!-- Tabs -->
+    <div class="flex flex-wrap justify-center border-b mb-6">
+      <button onclick="showTab('adicionar')" class="py-2 px-4 hover:bg-gray-100 rounded-t">➕ Adicionar Produto</button>
+      <button onclick="showTab('editar')" class="py-2 px-4 hover:bg-gray-100 rounded-t">✏️ Editar Produtos</button>
+    </div>
+
+    <!-- Adicionar Produto -->
+    <div id="adicionar" class="tab-content">
+  <form action="/api/produtos/adicionar" method="POST" enctype="multipart/form-data" class="space-y-4">
+    <div>
+      <label class="block font-medium text-gray-700">Nome do Produto</label>
+      <input name="name" required class="w-full border rounded px-3 py-2" />
+    </div>
+    <div>
+    <label class="block font-medium text-gray-700">Preço (€)</label>
+    <input 
+        name="price_display" 
+        type="text" 
+        inputmode="decimal"
+        required 
+        class="w-full border rounded px-3 py-2"
+        placeholder="Usa a virgula Ex: 29,99"
+        oninput="this.value = this.value.replace(/[^0-9,]/g, '').replace(/(,\d{0,2}).*$/, '$1');"
+    />
+    <input type="hidden" name="price" id="hiddenPrice" />
+    </div>
+        <div>
+        <label class="block font-medium text-gray-700 mb-2">Tamanhos disponíveis</label>
+        <div class="flex gap-4 flex-wrap">
+            <label class="inline-flex items-center gap-2">
+            <input type="checkbox" name="sizes" value="S" class="rounded border-gray-300" />
+            <span>S</span>
+            </label>
+            <label class="inline-flex items-center gap-2">
+            <input type="checkbox" name="sizes" value="M" class="rounded border-gray-300" />
+            <span>M</span>
+            </label>
+            <label class="inline-flex items-center gap-2">
+            <input type="checkbox" name="sizes" value="L" class="rounded border-gray-300" />
+            <span>L</span>
+            </label>
+            <label class="inline-flex items-center gap-2">
+            <input type="checkbox" name="sizes" value="XL" class="rounded border-gray-300" />
+            <span>XL</span>
+            </label>
+        </div>
+    </div>
+        <div>
+        <label class="block font-medium text-gray-700">Número do Produto Stripe</label>
+        <input
+            type="text"
+            name="stripe_product_id"
+            placeholder="Ex: prod_12345abc"
+            class="w-full border rounded px-3 py-2"
+        />
+        </div>
+    <div>
+      <label class="block font-medium text-gray-700">Categoria</label>
+      <select name="category" required class="w-full border rounded px-3 py-2">
+        <option value="yourself">Yourself</option>
+        <option value="resell">Resell</option>
+      </select>
+    </div>
+        <div>
+        <label class="block font-medium text-gray-700">Quantidade em Stock</label>
+        <input
+            type="number"
+            name="stock_quantity"
+            min="0"
+            value="0"
+            class="w-full border rounded px-3 py-2"
+            required
+        />
+        </div>
+    <div>
+        <label class="block font-medium text-gray-700">Imagens (a primeira vai ser a capa do produto)</label>
+        <input 
+            type="file" 
+            name="images" 
+            accept="image/*" 
+            multiple 
+            onchange="previewImagem(this)" 
+            class="w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200" 
+        />
+        <div id="imagemPreviewContainer" class="mt-3 flex flex-wrap gap-2"></div>
+    </div>
+    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 font-semibold">Adicionar Produto</button>
+  </form>
+</div>
+
+<!-- Editar Produtos -->
+<div id="editar" class="tab-content hidden space-y-6">
+  <div id="lista-produtos" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {% if produtos|length == 0 %}
+      <p class="text-center text-gray-600 italic">Não há produtos para editar.</p>
+    {% else %}
+      {% for produto in produtos %}
+        <div id="produto-{{ produto.id }}" class="produto p-4 border rounded shadow hover:shadow-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white relative">
+          <div class="flex items-center gap-4">
+            {% if produto.principal %}
+              <img src="/static/uploads/{{ produto.principal }}" alt="Imagem do produto" class="w-24 h-24 object-cover rounded" />
+            {% else %}
+              <div class="w-24 h-24 bg-gray-200 rounded flex items-center justify-center text-gray-400">Sem imagem</div>
+            {% endif %}
+            <div>
+              <h3 class="text-lg font-semibold">{{ produto.name }}</h3>
+              <p class="text-gray-700">€{{ produto.price }}</p>
+              <p class="text-gray-700">Tamanhos: {{ produto.sizes | join(', ') }}</p>
+              <p class="text-gray-600">Categoria: {{ produto.category | default('yourself') }}</p>
+            </div>
+          </div>
+          <div class="flex gap-2 flex-col sm:flex-row sm:items-center">
+            <button onclick="abrirFormularioEdicao({{ produto | tojson }})" 
+                    class="bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded shadow transition">Editar</button>
+            <button onclick="removerProduto({{ produto.id }})"
+                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded shadow transition">Remover</button>
+          </div>
+
+          <!-- Formulário de Edição oculto dentro do produto -->
+          <form class="form-edicao-produto hidden space-y-4 border-t pt-6 mt-4 w-full bg-gray-50 p-4 rounded" method="POST" enctype="multipart/form-data" onsubmit="return submitEdicaoProduto(event, {{ produto.id }})">
+            <input type="hidden" name="id" class="produtoId" />
+            <div>
+              <label class="block font-medium text-gray-700 mb-1">Nome do Produto</label>
+              <input name="name" required class="w-full border rounded px-3 py-2 produtoName" />
+            </div>
+            <div>
+              <label class="block font-medium text-gray-700 mb-1">Preço (€)</label>
+              <input name="price" type="text" required class="w-full border rounded px-3 py-2 produtoPrice" />
+            </div>
+            <div>
+              <label class="block font-medium text-gray-700 mb-1">Tamanhos disponíveis</label>
+              <div class="flex gap-4">
+                <label><input type="checkbox" name="size" value="S" class="mr-1 sizeCheckbox" />S</label>
+                <label><input type="checkbox" name="size" value="M" class="mr-1 sizeCheckbox" />M</label>
+                <label><input type="checkbox" name="size" value="L" class="mr-1 sizeCheckbox" />L</label>
+                <label><input type="checkbox" name="size" value="XL" class="mr-1 sizeCheckbox" />XL</label>
+              </div>
+            </div>
+            <div>
+              <label class="block font-medium text-gray-700 mb-1">Categoria</label>
+              <select name="category" required class="w-full border rounded px-3 py-2 produtoCategory">
+                <option value="yourself">Yourself</option>
+                <option value="resell">Resell</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-medium text-gray-700 mb-1">Imagem atual</label>
+              <img src="" alt="Imagem Atual" class="imagemAtual w-32 h-32 object-cover rounded mb-2" />
+              <label class="block font-medium text-gray-700 mb-1">Trocar imagem (opcional)</label>
+              <input type="file" name="image" accept="image/*" class="w-full" />
+            </div>
+            <div class="imagens-secundarias-container flex gap-2 mt-2 flex-wrap"></div>
+            <div class="flex gap-2 items-center">
+              <button type="submit" class="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 flex items-center gap-2">
+                <span class="btnText">Salvar Alterações</span>
+                <svg class="loadingIcon hidden animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                </svg>
+              </button>
+              <button type="button" onclick="fecharFormularioEdicao({{ produto.id }})" class="py-2 px-4 border rounded hover:bg-gray-100">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  function abrirFormularioEdicao(produto) {
+    document.querySelectorAll('.form-edicao-produto').forEach(form => form.classList.add('hidden'));
+
+    const produtoDiv = document.getElementById('produto-' + produto.id);
+    if(!produtoDiv) return;
+
+    const form = produtoDiv.querySelector('.form-edicao-produto');
+    form.classList.remove('hidden');
+
+    form.querySelector('.produtoId').value = produto.id;
+    form.querySelector('.produtoName').value = produto.name;
+    form.querySelector('.produtoPrice').value = produto.price.toString().replace('.', ',');
+
+    // produto.sizes já é array
+    const sizes = produto.sizes || [];
+    form.querySelectorAll('.sizeCheckbox').forEach(cb => {
+      cb.checked = sizes.includes(cb.value);
+    });
+
+    form.querySelector('.produtoCategory').value = produto.category || 'yourself';
+
+    const imagemAtual = form.querySelector('.imagemAtual');
+    if(produto.principal){
+      imagemAtual.src = `/static/uploads/${produto.principal}`;
+      imagemAtual.style.display = 'block';
+    } else {
+      imagemAtual.style.display = 'none';
+    }
+
+    // Imagens secundárias
+    const containerSecundarias = form.querySelector('.imagens-secundarias-container');
+    containerSecundarias.innerHTML = '';
+    if(produto.secundarias && produto.secundarias.length > 0){
+      produto.secundarias.forEach(img => {
+        const im = document.createElement('img');
+        im.src = `/static/uploads/${img}`;
+        im.className = 'w-16 h-16 object-cover rounded border';
+        containerSecundarias.appendChild(im);
+      });
+    }
+
+    form.scrollIntoView({behavior: 'smooth'});
+  }
+
+  function fecharFormularioEdicao(produtoId) {
+    const produtoDiv = document.getElementById('produto-' + produtoId);
+    if(!produtoDiv) return;
+
+    const form = produtoDiv.querySelector('.form-edicao-produto');
+    form.classList.add('hidden');
+    form.reset && form.reset();
+
+    const imagemAtual = form.querySelector('.imagemAtual');
+    imagemAtual.style.display = 'none';
+
+    const containerSecundarias = form.querySelector('.imagens-secundarias-container');
+    containerSecundarias.innerHTML = '';
+  }
+
+  async function submitEdicaoProduto(event, produtoId) {
+    event.preventDefault();
+
+    const form = event.target;
+    const btnText = form.querySelector('.btnText');
+    const loadingIcon = form.querySelector('.loadingIcon');
+
+    btnText.style.display = 'none';
+    loadingIcon.style.display = 'inline-block';
+
+    const formData = new FormData(form);
+
+    // Envia os tamanhos como array (com o nome 'sizes[]')
+    const sizesChecked = Array.from(form.querySelectorAll('input[name="size"]:checked')).map(cb => cb.value);
+    formData.delete('size'); // remove se existir
+    sizesChecked.forEach(s => formData.append('sizes[]', s));
+
+    try {
+      const response = await fetch(`/api/produtos/editar/${produtoId}`, {
+        method: 'POST',
+        body: formData
+      });
+
+      btnText.style.display = 'inline';
+      loadingIcon.style.display = 'none';
+
+      if (response.ok) {
+        alert('Produto atualizado com sucesso!');
+        location.reload();
+      } else {
+        const error = await response.text();
+        alert('Erro ao atualizar produto: ' + error);
+      }
+    } catch(err) {
+      btnText.style.display = 'inline';
+      loadingIcon.style.display = 'none';
+      alert('Erro de rede ou servidor.');
+    }
+  }
+
+  async function removerProduto(produtoId) {
+    if(!confirm('Tem a certeza que quer remover este produto? Esta ação não pode ser desfeita.')) return;
+
+    try {
+      const response = await fetch(`/api/produtos/remover/${produtoId}`, {
+        method: 'DELETE'
+      });
+
+      if(response.ok){
+        alert('Produto removido com sucesso!');
+        const produtoDiv = document.getElementById('produto-' + produtoId);
+        if(produtoDiv) produtoDiv.remove();
+
+        location.reload();
+      } else {
+        const error = await response.text();
+        alert('Erro ao remover produto: ' + error);
+      }
+    } catch(err) {
+      alert('Erro de rede ou servidor.');
+    }
+  }
+</script>
+
+
+<script>
+  function previewImagem(input) {
+    const container = document.getElementById('imagemPreviewContainer');
+    container.innerHTML = '';
+
+    if (input.files && input.files.length > 0) {
+      for (let i = 0; i < input.files.length; i++) {
+        const file = input.files[i];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.classList.add('w-32', 'h-32', 'object-cover', 'rounded');
+          container.appendChild(img);
+        };
+
+        reader.readAsDataURL(file);
+      }
+    }
+  }
+</script>
+
+<script>
+  const priceInput = document.querySelector('input[name="price_display"]');
+  const hiddenPrice = document.getElementById('hiddenPrice');
+
+  priceInput.addEventListener('input', () => {
+    const valor = priceInput.value.replace(',', '.');
+    hiddenPrice.value = valor;
+  });
+</script>
+</body>
+</html>

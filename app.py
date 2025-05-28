@@ -1,13 +1,15 @@
 from quart import Quart
 import asyncio
 from dotenv import load_dotenv
-from backend.api.routes import routes
+from backend.api.routes import routes as pages
+from backend.api.produtos import produtos_api
 
 load_dotenv()
 
 app = Quart(__name__, static_folder='frontend/static', template_folder='frontend/templates')
 app.secret_key = 'bananaazul'
-app.register_blueprint(routes)
+app.register_blueprint(pages)
+app.register_blueprint(produtos_api)
 
 async def main():
     await asyncio.gather(

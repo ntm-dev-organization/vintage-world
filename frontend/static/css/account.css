@@ -1,0 +1,151 @@
+/* Importar fontes */
+@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700&family=Prata&display=swap');
+
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Corpo */
+body {
+    font-family: 'Comic Neue', cursive;
+    background-color: #0f0f0f;
+    color: #f0f0f0;
+}
+
+/* Banner */
+main > img {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    filter: brightness(0.8);
+    padding-top: 70px;
+    position: relative;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    position: relative;
+    height: 150px;
+}
+
+header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    bottom: -15px;
+    height: 120px;
+    background: url('/frontend/static/images/banner.png') repeat-x bottom;
+    background-size: contain;
+    pointer-events: none;
+    z-index: 15;
+}
+
+/* Hamburguer menu */
+.hamburguer-menu {
+    width: 40px;
+    height: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 999;
+}
+
+.hamburguer-menu span {
+    height: 3px;
+    width: 100%;
+    background-color: #f0f0f0;
+    border-radius: 2px;
+    transition: all 0.3s ease-in-out;
+}
+
+.hamburguer-menu.open span:nth-child(1) {
+    transform: translateY(11px) rotate(45deg);
+}
+
+.hamburguer-menu.open span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburguer-menu.open span:nth-child(3) {
+    transform: translateY(-11px) rotate(-45deg);
+}
+
+/* Logo */
+.logo img {
+    height: 90px;
+}
+
+.full-screen-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #111;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 998;
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.full-screen-menu.menu-open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+.menu-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+}
+
+.menu-items li a {
+  color: #ffffff;
+  font-size: 2rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.menu-items li a:hover {
+  color: #767166;
+}
+
+.menu-footer {
+  margin-bottom: 40px;
+  display: flex;
+  gap: 10px;
+}
+.menu-footer a {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.2s;
+}
+.menu-footer a:hover {
+  color: #ccc;
+}
