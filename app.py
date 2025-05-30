@@ -3,6 +3,7 @@ import asyncio
 from dotenv import load_dotenv
 from backend.api.routes import routes as pages
 from backend.api.produtos import produtos_api
+from backend.api.produtos import produtos_site
 
 load_dotenv()
 
@@ -10,6 +11,7 @@ app = Quart(__name__, static_folder='frontend/static', template_folder='frontend
 app.secret_key = 'bananaazul'
 app.register_blueprint(pages)
 app.register_blueprint(produtos_api)
+app.register_blueprint(produtos_site)
 
 async def main():
     await asyncio.gather(

@@ -12,10 +12,6 @@ routes = Blueprint('routes', __name__)
 async def index():
     return await render_template("index.html")
 
-@routes.route("/resell")
-async def resell():
-    return await render_template("resell.html")
-
 @routes.route("/yourself")
 async def yourself():
     return await render_template("yourself.html")

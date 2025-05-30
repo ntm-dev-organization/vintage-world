@@ -1,4 +1,4 @@
-from quart import Blueprint, request, redirect
+from quart import Blueprint, request, redirect, abort, render_template
 import os
 from sqlalchemy.future import select
 from sqlalchemy.exc import SQLAlchemyError
@@ -135,3 +135,44 @@ async def listar_ids():
         result = await session.execute(select(Produto.id))
         ids = result.scalars().all()
         return {"ids": ids}
+    
+#produtos para o site
+
+produtos_site = Blueprint("produtos_site", __name__)
+
+@produtos_site.route("/produtos/<categoria>")
+async def listar_por_categoria(categoria):
+    if categoria not in ("resell", "yourself"):
+        return abort(404)
+
+    async with async_session() as session:
+        try:
+            result = await session.execute(select(Produto).where(Produto.category == categoria))
+            produtos = result.scalars().all()
+        except SQLAlchemyError as e:
+            print("Erro a buscar produtos:", e)
+            produtos = []
+
+    return await render_template("product.html", produtos=produtos, categoria=categoria)
+
+@produtos_site.route("/produto/<int:produto_id>")
+async def mostrar_produto(produto_id):
+    async with async_session() as session:
+        produto = await session.get(Produto, produto_id)
+        if not produto:
+            return "Produto não encontrado", 404
+
+        sizes = produto.sizes
+        if isinstance(sizes, str):
+            import json
+            sizes = json.loads(sizes)
+
+        return await render_template("product.html", produto=produto, sizes=sizes)
+    
+@produtos_site.route("/resell")
+async def resell():
+    async with async_session() as session:
+        result = await session.execute(select(Produto).where(Produto.category == "resell"))
+        produtos = result.scalars().all()
+
+    return await render_template("resell.html", produtos=produtos)

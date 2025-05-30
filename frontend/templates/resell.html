@@ -56,68 +56,23 @@
         </header>
 
         <div class="shop">
-            <div class="cards">
-                <div class="card">
-                    <div class="img-card">
-                        <img src="/frontend/static/images/teste.png" alt="product image">
-                    </div>
-                    <div class="informations-card">
-                        <h1 class="product">Vintage T-shirt</h1>
-                        <p class="type">Bulk</p>
-                    </div>
+        <div class="cards">
+            {% for produto in produtos %}
+            <div class="card">
+                <div class="img-card">
+                    {% if produto.principal %}
+                        <img src="/frontend/static/uploads/{{ produto.principal }}" alt="{{ produto.name }}" />
+                    {% else %}
+                        <img src="/frontend/static/images/no-image.png" alt="Sem imagem" />
+                    {% endif %}
                 </div>
-
-                <div class="card">
-                    <div class="img-card">
-                        <img src="/frontend/static/images/teste.png" alt="product image">
-                    </div>
-                    <div class="informations-card">
-                        <h1 class="product">Vintage T-shirt</h1>
-                        <p class="type">Bulk</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="img-card">
-                        <img src="/frontend/static/images/teste.png" alt="product image">
-                    </div>
-                    <div class="informations-card">
-                        <h1 class="product">Vintage T-shirt</h1>
-                        <p class="type">Bulk</p>
-                    </div>
+                <div class="informations-card">
+                    <h1 class="product">{{ produto.name }}</h1>
+                    <p class="type">{{ produto.category|capitalize }}</p>
                 </div>
             </div>
-            <div class="cards">
-                <div class="card">
-                    <div class="img-card">
-                        <img src="/frontend/static/images/teste.png" alt="product image">
-                    </div>
-                    <div class="informations-card">
-                        <h1 class="product">Vintage T-shirt</h1>
-                        <p class="type">Bulk</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="img-card">
-                        <img src="/frontend/static/images/teste.png" alt="product image">
-                    </div>
-                    <div class="informations-card">
-                        <h1 class="product">Vintage T-shirt</h1>
-                        <p class="type">Bulk</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="img-card">
-                        <img src="/frontend/static/images/teste.png" alt="product image">
-                    </div>
-                    <div class="informations-card">
-                        <h1 class="product">Vintage T-shirt</h1>
-                        <p class="type">Bulk</p>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
+        </div>
         </div>
     </main>
 </body>
