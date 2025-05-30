@@ -144,14 +144,20 @@
             </div>
           </div>
           <div class="flex gap-2 flex-col sm:flex-row sm:items-center">
-            <button onclick="abrirFormularioEdicao({{ produto | tojson }})" 
-                    class="bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded shadow transition">Editar</button>
+
+            <button onclick='abrirFormularioEdicao(this, {{ produto | tojson | safe }})'
+                    class="bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded shadow transition">
+              Editar
+            </button>
+
             <button onclick="removerProduto({{ produto.id }})"
-                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded shadow transition">Remover</button>
+                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded shadow transition">
+                    Remover
+            </button>
           </div>
 
           <!-- Formulário de Edição oculto dentro do produto -->
-          <form class="form-edicao-produto hidden space-y-4 border-t pt-6 mt-4 w-full bg-gray-50 p-4 rounded" method="POST" enctype="multipart/form-data" onsubmit="return submitEdicaoProduto(event, {{ produto.id }})">
+          <form action="{{ url_for('produtos_api.editar_produto', produto_id=produto.id) }}" class="form-edicao-produto hidden space-y-4 border-t pt-6 mt-4 w-full bg-gray-50 p-4 rounded" method="POST" enctype="multipart/form-data" >
             <input type="hidden" name="id" class="produtoId" />
             <div>
               <label class="block font-medium text-gray-700 mb-1">Nome do Produto</label>
@@ -164,10 +170,10 @@
             <div>
               <label class="block font-medium text-gray-700 mb-1">Tamanhos disponíveis</label>
               <div class="flex gap-4">
-                <label><input type="checkbox" name="size" value="S" class="mr-1 sizeCheckbox" />S</label>
-                <label><input type="checkbox" name="size" value="M" class="mr-1 sizeCheckbox" />M</label>
-                <label><input type="checkbox" name="size" value="L" class="mr-1 sizeCheckbox" />L</label>
-                <label><input type="checkbox" name="size" value="XL" class="mr-1 sizeCheckbox" />XL</label>
+                <label><input type="checkbox" name="sizes" value="S" class="mr-1 sizeCheckbox" />S</label>
+                <label><input type="checkbox" name="sizes" value="M" class="mr-1 sizeCheckbox" />M</label>
+                <label><input type="checkbox" name="sizes" value="L" class="mr-1 sizeCheckbox" />L</label>
+                <label><input type="checkbox" name="sizes" value="XL" class="mr-1 sizeCheckbox" />XL</label>
               </div>
             </div>
             <div>
@@ -201,106 +207,119 @@
   </div>
 </div>
 
+
+<!--Editar Produtos-->
 <script>
-  function abrirFormularioEdicao(produto) {
-    document.querySelectorAll('.form-edicao-produto').forEach(form => form.classList.add('hidden'));
+function abrirFormularioEdicao(botao, produto) {
+  console.log('Abrir formulário para produto:', produto.id);
 
-    const produtoDiv = document.getElementById('produto-' + produto.id);
-    if(!produtoDiv) return;
+  // Acha a div do produto
+  const produtoDiv = botao.closest('.produto');
+  if (!produtoDiv) {
+    console.error('Não encontrou o container do produto');
+    return;
+  }
+  console.log('Encontrou container do produto:', produtoDiv.id);
 
-    const form = produtoDiv.querySelector('.form-edicao-produto');
-    form.classList.remove('hidden');
+  // Acha o formulário dentro do produto
+  const form = produtoDiv.querySelector('.form-edicao-produto');
+  if (!form) {
+    console.error('Não encontrou o formulário dentro do produto');
+    return;
+  }
+  console.log('Encontrou o formulário de edição');
 
-    form.querySelector('.produtoId').value = produto.id;
-    form.querySelector('.produtoName').value = produto.name;
-    form.querySelector('.produtoPrice').value = produto.price.toString().replace('.', ',');
-
-    // produto.sizes já é array
-    const sizes = produto.sizes || [];
-    form.querySelectorAll('.sizeCheckbox').forEach(cb => {
-      cb.checked = sizes.includes(cb.value);
-    });
-
-    form.querySelector('.produtoCategory').value = produto.category || 'yourself';
-
-    const imagemAtual = form.querySelector('.imagemAtual');
-    if(produto.principal){
-      imagemAtual.src = `/static/uploads/${produto.principal}`;
-      imagemAtual.style.display = 'block';
+  // ESCONDER TODOS OS PRODUTOS MENOS ESTE
+  const listaProdutos = document.getElementById('lista-produtos');
+  const produtos = listaProdutos.querySelectorAll('.produto');
+  produtos.forEach(p => {
+    if (p === produtoDiv) {
+      // Mostrar só o formulário e esconder o resto do conteúdo
+      p.childNodes.forEach(child => {
+        if (child === form) {
+          child.classList.remove('hidden');
+          child.style.display = ''; // garante visibilidade do form
+        } else if (child.nodeType === 1) {
+          child.style.display = 'none'; // esconde o resto do conteúdo
+        }
+      });
     } else {
-      imagemAtual.style.display = 'none';
+      // Esconder produtos que não são este
+      const f = p.querySelector('.form-edicao-produto');
+      if (f) f.classList.add('hidden');
+      p.style.display = 'none';
     }
+  });
 
-    // Imagens secundárias
-    const containerSecundarias = form.querySelector('.imagens-secundarias-container');
-    containerSecundarias.innerHTML = '';
-    if(produto.secundarias && produto.secundarias.length > 0){
-      produto.secundarias.forEach(img => {
-        const im = document.createElement('img');
-        im.src = `/static/uploads/${img}`;
-        im.className = 'w-16 h-16 object-cover rounded border';
-        containerSecundarias.appendChild(im);
-      });
+  // Preencher os inputs
+  form.querySelector('input.produtoId').value = produto.id;
+  console.log('ID do produto preenchido:', produto.id);
+
+  form.querySelector('input.produtoName').value = produto.name || '';
+  console.log('Nome do produto preenchido:', produto.name || '');
+
+  form.querySelector('input.produtoPrice').value = produto.price || '';
+  console.log('Preço do produto preenchido:', produto.price || '');
+
+  // Preencher tamanhos (checkboxes)
+  const sizes = produto.sizes || [];
+  form.querySelectorAll('input.sizeCheckbox').forEach(checkbox => {
+    checkbox.checked = sizes.includes(checkbox.value);
+    console.log(`Checkbox ${checkbox.value} marcado?`, checkbox.checked);
+  });
+
+  // Preencher categoria (select)
+  form.querySelector('select.produtoCategory').value = produto.category || 'yourself';
+  console.log('Categoria preenchida:', produto.category || 'yourself');
+
+  // Atualizar imagem atual
+  const imgAtual = form.querySelector('img.imagemAtual');
+  if (imgAtual) {
+    if (produto.principal) {
+      imgAtual.src = `/static/uploads/${produto.principal}`;
+      console.log('Imagem atual definida:', imgAtual.src);
+    } else {
+      imgAtual.src = ''; // limpa se não tiver imagem
+      console.log('Produto não tem imagem principal');
     }
+  } else {
+    console.warn('Não encontrou a tag de imagem atual');
+  }
+}
 
-    form.scrollIntoView({behavior: 'smooth'});
+function fecharFormularioEdicao(produtoId) {
+  console.log('Fechar formulário para produto:', produtoId);
+
+  const produtoDiv = document.getElementById(`produto-${produtoId}`);
+  if (!produtoDiv) {
+    console.error('Não encontrou o container do produto ao fechar');
+    return;
   }
 
-  function fecharFormularioEdicao(produtoId) {
-    const produtoDiv = document.getElementById('produto-' + produtoId);
-    if(!produtoDiv) return;
-
-    const form = produtoDiv.querySelector('.form-edicao-produto');
-    form.classList.add('hidden');
-    form.reset && form.reset();
-
-    const imagemAtual = form.querySelector('.imagemAtual');
-    imagemAtual.style.display = 'none';
-
-    const containerSecundarias = form.querySelector('.imagens-secundarias-container');
-    containerSecundarias.innerHTML = '';
-  }
-
-  async function submitEdicaoProduto(event, produtoId) {
-    event.preventDefault();
-
-    const form = event.target;
-    const btnText = form.querySelector('.btnText');
-    const loadingIcon = form.querySelector('.loadingIcon');
-
-    btnText.style.display = 'none';
-    loadingIcon.style.display = 'inline-block';
-
-    const formData = new FormData(form);
-
-    // Envia os tamanhos como array (com o nome 'sizes[]')
-    const sizesChecked = Array.from(form.querySelectorAll('input[name="size"]:checked')).map(cb => cb.value);
-    formData.delete('size'); // remove se existir
-    sizesChecked.forEach(s => formData.append('sizes[]', s));
-
-    try {
-      const response = await fetch(`/api/produtos/editar/${produtoId}`, {
-        method: 'POST',
-        body: formData
-      });
-
-      btnText.style.display = 'inline';
-      loadingIcon.style.display = 'none';
-
-      if (response.ok) {
-        alert('Produto atualizado com sucesso!');
-        location.reload();
-      } else {
-        const error = await response.text();
-        alert('Erro ao atualizar produto: ' + error);
+  // Mostrar todos os produtos e esconder os formulários
+  const listaProdutos = document.getElementById('lista-produtos');
+  listaProdutos.querySelectorAll('.produto').forEach(p => {
+    p.style.display = '';
+    const form = p.querySelector('.form-edicao-produto');
+    if (form) {
+      form.classList.add('hidden');
+      form.reset();
+    }
+    // Mostrar todos os filhos (conteúdo do produto)
+    p.childNodes.forEach(child => {
+      if (child.nodeType === 1) {
+        child.style.display = '';
       }
-    } catch(err) {
-      btnText.style.display = 'inline';
-      loadingIcon.style.display = 'none';
-      alert('Erro de rede ou servidor.');
-    }
-  }
+    });
+  });
 
+  console.log('Formulário escondido e produtos mostrados');
+}
+</script>
+
+
+<!--Remover produtos-->
+<script>
   async function removerProduto(produtoId) {
     if(!confirm('Tem a certeza que quer remover este produto? Esta ação não pode ser desfeita.')) return;
 

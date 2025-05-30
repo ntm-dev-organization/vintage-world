@@ -47,13 +47,14 @@ async def admin_login():
     return await render_template("admin_login.html")
 
 
-@routes.route("/admin")
+@routes.route("/admin", methods=["GET", "POST"])
 async def admin_painel():
     if not session.get("admin_logged_in"):
         return redirect(url_for("routes.admin_login"))
 
     produtos = await listar_produtos()
-    return await render_template("admin.html", produtos=produtos)
+    produtos_dict = [produto.to_dict() for produto in produtos]
+    return await render_template("admin.html", produtos=produtos_dict)
 
 @routes.route("/admin/logout")
 async def admin_logout():

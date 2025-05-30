@@ -15,3 +15,16 @@ class Produto(Base):
     stock = Column(Integer)
     principal = Column(String)
     secundarias = Column(ARRAY(String))
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "price": self.price,
+            "sizes": self.sizes,
+            "category": self.category,
+            "stripe_num": self.stripe_num,
+            "stock": self.stock,
+            "principal": self.principal,
+            "secundarias": self.secundarias
+        }
