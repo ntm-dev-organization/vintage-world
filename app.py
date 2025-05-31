@@ -1,5 +1,5 @@
-from quart import Quart
 import asyncio
+from quart import Quart
 from dotenv import load_dotenv
 from backend.api.routes import routes as pages
 from backend.api.produtos import produtos_api

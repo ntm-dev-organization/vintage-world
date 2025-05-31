@@ -36,10 +36,14 @@
     <div class="flex flex-wrap justify-center border-b mb-6">
       <button onclick="showTab('adicionar')" class="py-2 px-4 hover:bg-gray-100 rounded-t">➕ Adicionar Produto</button>
       <button onclick="showTab('editar')" class="py-2 px-4 hover:bg-gray-100 rounded-t">✏️ Editar Produtos</button>
+      <button onclick="showTab('estado-loja')" class="py-2 px-4 hover:bg-gray-100 rounded-t">🛍️ Estado da Loja</button>
+      <button onclick="showTab('carrossel')" class="py-2 px-4 hover:bg-gray-100 rounded-t">🎞️ Carrossel</button>
     </div>
+  </div>
+  </div>
 
     <!-- Adicionar Produto -->
-    <div id="adicionar" class="tab-content">
+    <div id="adicionar" class="tab-content mt-12">
   <form action="/api/produtos/adicionar" method="POST" enctype="multipart/form-data" class="space-y-4">
     <div>
       <label class="block font-medium text-gray-700">Nome do Produto</label>
@@ -123,7 +127,7 @@
 </div>
 
 <!-- Editar Produtos -->
-<div id="editar" class="tab-content hidden space-y-6">
+<div id="editar" class="tab-content hidden space-y-6 mt-12">
   <div id="lista-produtos" class="grid grid-cols-1 md:grid-cols-2 gap-6">
     {% if produtos|length == 0 %}
       <p class="text-center text-gray-600 italic">Não há produtos para editar.</p>
@@ -207,8 +211,31 @@
   </div>
 </div>
 
+<script>
+  async function removerProduto(produtoId) {
+    if(!confirm('Tem a certeza que quer remover este produto? Esta ação não pode ser desfeita.')) return;
 
-<!--Editar Produtos-->
+    try {
+      const response = await fetch(`/api/produtos/remover/${produtoId}`, {
+        method: 'DELETE'
+      });
+
+      if(response.ok){
+        alert('Produto removido com sucesso!');
+        const produtoDiv = document.getElementById('produto-' + produtoId);
+        if(produtoDiv) produtoDiv.remove();
+
+        location.reload();
+      } else {
+        const error = await response.text();
+        alert('Erro ao remover produto: ' + error);
+      }
+    } catch(err) {
+      alert('Erro de rede ou servidor.');
+    }
+  }
+</script>
+
 <script>
 function abrirFormularioEdicao(botao, produto) {
   console.log('Abrir formulário para produto:', produto.id);
@@ -305,7 +332,6 @@ function fecharFormularioEdicao(produtoId) {
       form.classList.add('hidden');
       form.reset();
     }
-    // Mostrar todos os filhos (conteúdo do produto)
     p.childNodes.forEach(child => {
       if (child.nodeType === 1) {
         child.style.display = '';
@@ -317,31 +343,182 @@ function fecharFormularioEdicao(produtoId) {
 }
 </script>
 
+<!-- Estado da Loja -->
+<div id="estado-loja" class="tab-content text-center space-y-10 mt-12">
+  <h2 class="text-xl font-semibold text-gray-800">Estado Atual da Loja</h2>
+  
+  <p id="estado-loja-texto" class="text-lg font-semibold">
 
-<!--Remover produtos-->
+  </p>
+  
+  <button
+    id="botao-loja"
+    class="px-4 py-2 rounded text-white bg-blue-600 hover:bg-blue-700"
+    onclick="alternarEstadoLoja()"
+  >
+    Abrir/Fechar Loja
+  </button>
+</div>
+
 <script>
-  async function removerProduto(produtoId) {
-    if(!confirm('Tem a certeza que quer remover este produto? Esta ação não pode ser desfeita.')) return;
+let estadoLojaAberta = false;
+
+async function obterEstadoLoja() {
+  try {
+    const res = await fetch("/api/loja/estado");
+    if (!res.ok) throw new Error("Erro ao obter estado");
+    const texto = await res.text();
+    estadoLojaAberta = (texto.trim() === "aberta");
+    atualizarEstadoVisual();
+  } catch (err) {
+    const textoElem = document.getElementById("estado-loja-texto");
+    textoElem.textContent = "Erro ao obter estado da loja.";
+    textoElem.className = "text-red-600 font-semibold";
+    document.getElementById("botao-loja").classList.add("hidden");
+  }
+}
+
+function atualizarEstadoVisual() {
+  const textoElem = document.getElementById("estado-loja-texto");
+  if (estadoLojaAberta) {
+    textoElem.textContent = "🟢 Loja Aberta para Clientes";
+    textoElem.className = "text-green-600 font-semibold";
+    document.getElementById("botao-loja").textContent = "Fechar Loja";
+    document.getElementById("botao-loja").className = "px-4 py-2 rounded text-white bg-red-600 hover:bg-red-700";
+  } else {
+    textoElem.textContent = "🔴 Loja Fechada para Clientes";
+    textoElem.className = "text-red-600 font-semibold";
+    document.getElementById("botao-loja").textContent = "Abrir Loja";
+    document.getElementById("botao-loja").className = "px-4 py-2 rounded text-white bg-green-600 hover:bg-green-700";
+  }
+}
+
+async function alternarEstadoLoja() {
+  const novoEstado = !estadoLojaAberta;
+  try {
+    const res = await fetch("/api/loja/estado", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ aberta: novoEstado }),
+    });
+    const text = await res.text();
+    if (res.ok) {
+      estadoLojaAberta = novoEstado;
+      atualizarEstadoVisual();
+      alert(text);
+    } else {
+      alert("Erro ao atualizar estado: " + text);
+    }
+  } catch (err) {
+    alert("Erro ao comunicar com o servidor.");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", obterEstadoLoja);
+</script>
+
+
+  <!-- Carrousel-->
+<div id="tab-carrossel" class="hidden p-4">
+
+  <h2 class="text-xl font-semibold mb-4">Gerir Imagens do Carrossel</h2>
+
+  <form id="form-adicionar-imagem" enctype="multipart/form-data">
+    <label class="block mb-2 font-medium" for="imagem-carrossel">Selecionar imagem para adicionar:</label>
+    <input type="file" id="imagem-carrossel" name="imagem" accept="image/*" required class="mb-4">
+    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Adicionar Imagem</button>
+  </form>
+
+  <hr class="my-6">
+
+  <h3 class="text-lg font-semibold mb-2">Imagens Atuais</h3>
+  <div id="lista-imagens-carrossel" class="grid grid-cols-3 gap-4">
+  </div>
+
+</div>
+
+<script>
+  // Handle form para adicionar imagem
+  const form = document.getElementById('form-adicionar-imagem');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const inputFile = document.getElementById('imagem-carrossel');
+    const file = inputFile.files[0];
+    if (!file) return alert("Por favor selecione uma imagem.");
+
+    const formData = new FormData();
+    formData.append('imagem', file);
 
     try {
-      const response = await fetch(`/api/produtos/remover/${produtoId}`, {
-        method: 'DELETE'
+      const res = await fetch('/api/carrossel/imagens', {
+        method: 'POST',
+        body: formData
       });
 
-      if(response.ok){
-        alert('Produto removido com sucesso!');
-        const produtoDiv = document.getElementById('produto-' + produtoId);
-        if(produtoDiv) produtoDiv.remove();
-
-        location.reload();
+      if (res.ok) {
+        alert('Imagem adicionada com sucesso!');
+        inputFile.value = '';  // limpa o input
+        carregarImagensCarrossel();
       } else {
-        const error = await response.text();
-        alert('Erro ao remover produto: ' + error);
+        const texto = await res.text();
+        alert('Erro ao adicionar imagem: ' + texto);
       }
-    } catch(err) {
-      alert('Erro de rede ou servidor.');
+    } catch (err) {
+      alert('Erro na comunicação com o servidor.');
     }
+  });
+});
+
+async function carregarImagensCarrossel() {
+  try {
+    const res = await fetch('/api/carrossel/imagens');
+    if (!res.ok) throw new Error('Erro ao carregar imagens');
+    const imagens = await res.json();
+
+    const lista = document.getElementById('lista-imagens-carrossel');
+    lista.innerHTML = '';
+
+    imagens.forEach(imagem => {
+      const div = document.createElement('div');
+      div.className = 'relative';
+
+      const img = document.createElement('img');
+      img.src = imagem.url;  // URL que serve a imagem do backend
+      img.alt = imagem.filename || 'Imagem Carrossel';
+      img.className = 'w-full h-32 object-cover rounded';
+
+      const btnRemover = document.createElement('button');
+      btnRemover.textContent = '❌';
+      btnRemover.className = 'absolute top-1 right-1 bg-red-600 text-white rounded px-1 hover:bg-red-700';
+      btnRemover.onclick = () => removerImagemCarrossel(imagem.id);
+
+      div.appendChild(img);
+      div.appendChild(btnRemover);
+      lista.appendChild(div);
+    });
+  } catch (err) {
+    alert('Erro ao carregar imagens do carrossel.');
   }
+}
+
+async function removerImagemCarrossel(id) {
+  if (!confirm('Quer mesmo remover esta imagem do carrossel?')) return;
+
+  try {
+    const res = await fetch(`/api/carrossel/imagens/${id}`, {
+      method: 'DELETE'
+    });
+    if (res.ok) {
+      alert('Imagem removida!');
+      carregarImagensCarrossel();
+    } else {
+      const texto = await res.text();
+      alert('Erro ao remover imagem: ' + texto);
+    }
+  } catch (err) {
+    alert('Erro na comunicação com o servidor.');
+  }
+}
 </script>
 
 

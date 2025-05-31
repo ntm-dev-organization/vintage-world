@@ -1,6 +1,22 @@
 /* Importar fontes */
 @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700&family=Prata&display=swap');
 
+/* Variáveis de cor (podes colocar isto no início do CSS para fácil manutenção) */
+:root {
+  --preto-profundo: #000000;
+  --amarelo-estrela: #FFDF3A;
+  --azul-planeta: #2D79C5;
+  --azul-planeta-hover: #1F5DA2;
+  --verde-planeta: #6BA539;
+  --verde-planeta-hover: #558A2E;
+  --branco-neve: #FFFFFF;
+  --cinza-muito-claro: #F4F4F4;
+  --cinza-escuro: #333333;
+  --bordas-suaves: #DADADA;
+  --erro: #D43F3F;
+  --sucesso: #6BA539;
+}
+
 /* Reset básico */
 * {
     margin: 0;
@@ -11,8 +27,8 @@
 /* Corpo */
 body {
     font-family: 'Comic Neue', cursive;
-    background-color: #0f0f0f;
-    color: #f0f0f0;
+    background: linear-gradient(to bottom, var(--branco-neve) 0%, #F9F9F9 100%);
+    color: var(--preto-profundo);
 }
 
 /* Banner */
@@ -66,7 +82,7 @@ header::after {
 .hamburguer-menu span {
     height: 3px;
     width: 100%;
-    background-color: #f0f0f0;
+    background-color: var(--cinza-escuro);
     border-radius: 2px;
     transition: all 0.3s ease-in-out;
 }
@@ -96,13 +112,13 @@ header::after {
 .icons svg {
     width: 30px;
     height: 30px;
-    fill: #f0f0f0;
+    fill: var(--cinza-muito-claro);
     cursor: pointer;
     transition: transform 0.2s, fill 0.2s;
 }
 .icons svg:hover {
     transform: scale(1.1);
-    fill: #c9a86b;
+    fill: var(--amarelo-estrela);
 }
 
 /* Loja */
@@ -120,7 +136,7 @@ header::after {
 .card {
     width: 100%;
     max-width: 300px;
-    background-color: #1b1b1b;
+    background-color: var(--preto-profundo);
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 10px rgba(0,0,0,0.4);
@@ -152,11 +168,11 @@ header::after {
     font-family: 'Prata', serif;
     font-size: 1.1rem;
     margin-bottom: 0.4rem;
-    color: #f0f0f0;
+    color: var(--cinza-muito-claro);
 }
 .informations-card .type {
     font-size: 0.9rem;
-    color: #bbb;
+    color: var(--cinza-escuro);
 }
 
 @media (min-width: 768px) {
@@ -169,15 +185,14 @@ header::after {
   }
 }
 
-
 .full-screen-menu {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #111;
-  color: white;
+  background: var(--preto-profundo);
+  color: var(--branco-neve);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -208,13 +223,17 @@ header::after {
 }
 
 .menu-items li a {
-  color: #ffffff;
-  font-size: 2rem;
+  color: var(--branco-neve);
+  font-size: 1.5rem;
   text-decoration: none;
   transition: color 0.2s;
 }
 .menu-items li a:hover {
-  color: #767166;
+  color: var(--cinza-escuro);
+}
+
+.margin {
+    margin-bottom: 30px;
 }
 
 .menu-footer {
@@ -223,12 +242,26 @@ header::after {
   gap: 10px;
 }
 .menu-footer a {
-  color: white;
+  color: var(--branco-neve);
   text-decoration: none;
   font-size: 1rem;
   transition: color 0.2s;
 }
 .menu-footer a:hover {
-  color: #ccc;
+  color: var(--cinza-muito-claro);
 }
 
+.banner {
+    background: #000;
+    width: 50%;
+    color:#DADADA;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    -webkit-border-radius: 100px;
+    -moz-border-radius: 100px;
+    -ms-border-radius: 100px;
+    -o-border-radius: 100px;
+    border-radius: 100px;
+    opacity: 0.5;
+}

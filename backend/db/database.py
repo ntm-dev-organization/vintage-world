@@ -1,9 +1,8 @@
-
 import ssl
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
-import os 
+import os
 from dotenv import load_dotenv
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker, declarative_base
 
 load_dotenv()
 
@@ -22,3 +21,5 @@ async_session = sessionmaker(
     expire_on_commit=False,
     class_=AsyncSession
 )
+
+Base = declarative_base()

@@ -1,7 +1,6 @@
-from sqlalchemy import Column, Integer, String, Float, ARRAY
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
+from sqlalchemy import Column, Integer, String, Float, ARRAY, LargeBinary, ForeignKey
+from sqlalchemy.orm import relationship
+from backend.db.database import Base
 
 class Produto(Base):
     __tablename__ = "produtos"
@@ -28,3 +27,31 @@ class Produto(Base):
             "principal": self.principal,
             "secundarias": self.secundarias
         }
+    
+class CarouselImage(Base):
+    __tablename__ = "carousel_images"
+    id = Column(Integer, primary_key=True)
+    filename = Column(String, nullable=False)
+    content_type = Column(String, nullable=False)
+    data = Column(LargeBinary, nullable=False)
+
+class Status(Base):
+    __tablename__ = "status"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(10), nullable=False)
+    description = Column(String, nullable=True)
+
+    def __repr__(self):
+        return f"<Status(id={self.id}, name='{self.name}')>"
+
+class LojaEstado(Base):
+    __tablename__ = "loja_estado"
+
+    id = Column(Integer, primary_key=True)
+    status_id = Column(Integer, ForeignKey("status.id"), nullable=False)
+
+    status = relationship("Status")
+
+    def __repr__(self):
+        return f"<LojaEstado(id={self.id}, status={self.status.name})>"

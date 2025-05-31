@@ -3,22 +3,10 @@
   padding: 0;
   box-sizing: border-box;
 }
- .tagesschrift-regular {
-  font-family: "Tagesschrift", system-ui;
-  font-weight: 300;
-  font-style: normal;
-}
-
-.prata-regular {
-  font-family: "Prata", serif;
-  font-weight: 400;
-  font-style: normal;
-}
-
 
 body {
-  background-color: #0f0f0f;
-  color: white;
+  background-color: #FFFFFF;
+  color: #000000;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -33,12 +21,23 @@ main {
 }
 
 .logo {
-  margin-bottom: 100px;
+  margin-bottom: 50px;
 }
 
 .logo img {
   width: 120px;
   height: auto;
+}
+
+/* Fonts */
+.tagesschrift-regular {
+  font-family: "Tagesschrift", system-ui;
+  font-weight: 300;
+}
+
+.prata-regular {
+  font-family: "Prata", serif;
+  font-weight: 400;
 }
 
 .center h1 {
@@ -47,166 +46,125 @@ main {
   letter-spacing: 1px;
 }
 
-.bold .bold_a {
-  font-weight: 900;
-  color: #928862;
-  font-family: 'Comic Neue';
-}
-
-
+.bold .bold_a,
 .center h1 a {
-  font-weight: 700;
-  text-decoration: none;
-  color: #756c48;
+  font-weight: 900;
+  color: #000000;
   font-family: 'Comic Neue';
+  text-decoration: none;
 }
 
 .center h1 a:hover {
-  text-decoration: none;
-  color: #767166;
-  transform: scale(1.1);
+  color: #2D79C5;
+  transform: scale(1.05);
+  transition: 0.3s;
 }
 
-.background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    z-index: -1;
-    overflow: hidden;
-}
-
-.background picture,
-.background img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.buttons {
-    display: flex;
-    justify-content: center; 
-    align-items: center;    
-    gap: 1rem;              
-    margin-top: 2rem; 
-}
-
-.button_insta {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: rgb(20, 20, 20);
-  border: none;
-  font-weight: 600;
+.model {
+  background-color: #00000000;
+  color: #000000;
+  height: 400px;
+  margin-bottom: 50px;
+  border-radius: 30px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
-  cursor: pointer;
-  transition-duration: .3s;
+  align-items: center;
+  overflow: hidden;
+}
+
+.carousel-container {
+  width: 90%;
+  max-width: 800px;
+  height: 100%;
   overflow: hidden;
   position: relative;
+  border-radius: 20px;
 }
 
-.svgIcon {
-  width: 12px;
-  transition-duration: .3s;
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  height: 100%;
 }
 
-.svgIcon path {
-  fill: white;
+.carousel-track img {
+  width: 100%;
+  object-fit: cover;
+  flex: 0 0 100%;
+  height: 100%;
+  border-radius: 20px;
 }
 
-.button_insta:hover {
-  width: 140px;
-  border-radius: 50px;
-  transition-duration: .3s;
-  background-color: #574f37;
+
+.buttons {
+  display: flex;
+  justify-content: center; 
   align-items: center;
+  gap: 1rem; 
+  margin-top: 2rem; 
 }
 
-.button_insta:hover .svgIcon {
-  width: 50px;
-  transition-duration: .3s;
-  transform: translateY(85%);
-  -webkit-transform: translateY(85%);
-  -moz-transform: translateY(85%);
-  -ms-transform: translateY(85%);
-  -o-transform: translateY(85%);
-}
-
-.button_insta::before {
-  position: absolute;
-  top: -20px;
-  content: "Instagram";
-  color: white;
-  font-family: 'Comic Neue';
-  transition-duration: .3s;
-  font-size: 2px;
-}
-
-.button_insta:hover::before {
-  font-size: 13px;
-  opacity: 1;
-  transform: translateY(30px);
-  transition-duration: .3s;
-}
-
+.button_insta,
 .button_tiktok {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background-color: rgb(20, 20, 20);
+  background-color: #2D79C5;
   border: none;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+  box-shadow: 0px 0px 20px #DADADA;
   cursor: pointer;
-  transition-duration: .3s;
+  transition-duration: 0.3s;
   overflow: hidden;
   position: relative;
 }
 
 .svgIcon {
   width: 12px;
-  transition-duration: .3s;
+  transition: 0.3s;
 }
 
 .svgIcon path {
-  fill: white;
+  fill: #000000;
 }
 
+.button_insta:hover,
 .button_tiktok:hover {
   width: 140px;
   border-radius: 50px;
-  transition-duration: .3s;
-  background-color: #574f37;
-  align-items: center;
+  background-color: #1F5DA2;
 }
 
+.button_insta:hover .svgIcon,
 .button_tiktok:hover .svgIcon {
   width: 50px;
-  transition-duration: .3s;
   transform: translateY(85%);
 }
 
+.button_insta::before,
 .button_tiktok::before {
   position: absolute;
   top: -20px;
-  content: "TikTok";
-  font-family: 'Comic Neue';
   color: white;
-  transition-duration: .3s;
+  font-family: 'Comic Neue';
   font-size: 2px;
+  transition: 0.3s;
 }
 
+.button_insta::before {
+  content: "Instagram";
+}
+
+.button_tiktok::before {
+  content: "TikTok";
+}
+
+.button_insta:hover::before,
 .button_tiktok:hover::before {
   font-size: 13px;
-  opacity: 1;
   transform: translateY(30px);
-  transition-duration: .3s;
+  opacity: 1;
 }

@@ -13,7 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vintage World</title>
     <link rel="stylesheet" href="/frontend/static/css/index.css">
-    <link rel="shortcut icon" href="/frontend/static/images/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="/frontend/static/images/logo_new.png" type="image/x-icon">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Tagesschrift&display=swap');
     </style>
@@ -23,16 +23,21 @@
     
 </head>
 <body>
-    <div class="background">
-    <picture>
-        <source media="(min-width: 768px)" srcset="/frontend/static/images/borda_pc.png">
-        <img src="/frontend/static/images/borda_phone.png" alt="background">
-    </picture>
-</div>
     <main>
         <div class="logo">
-            <img src="/frontend/static/images/logo.png" alt="">
+            <img src="/frontend/static/images/logo_new.png" alt="Logo Vintage World">
         </div>
+
+        <div class="model">
+            <div class="carousel-container">
+                <div class="carousel-track">
+                {% for img in images %}
+                    <img src="{{ img.image_url }}" alt="Imagem do carrossel">
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+
         <div class="center">
             <h1 class="bold"><a href="/resell" class="bold_a">SHOP TO RESELL</a></h1>
             <h1><a href="/soon">SHOP FOR YOURSELF</a></h1>
@@ -68,5 +73,24 @@
             window.open("", "_blank");
         };
     });
+</script>
+
+<script>
+
+    //carrousel
+  const track = document.querySelector('.carousel-track');
+  const slides = Array.from(track.children);
+  let currentIndex = 0;
+
+  function updateSlidePosition() {
+    track.style.transform = `translateX(-${currentIndex * 100}%)`;
+  }
+
+  function autoPlay() {
+    currentIndex = (currentIndex + 1) % slides.length;
+    updateSlidePosition();
+  }
+
+  setInterval(autoPlay, 3000);
 </script>
 </html>
