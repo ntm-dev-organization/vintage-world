@@ -3,10 +3,10 @@ from quart import Quart, redirect, request, session, render_template, send_from_
 from dotenv import load_dotenv
 from backend.api.produtos import listar_produtos
 from backend.db.database import async_session
-from backend.db.models import LojaEstado, Status
+from backend.db.models import LojaEstado, Status, CarouselImage
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
-
+import uuid
 
 
 load_dotenv()
@@ -25,6 +25,10 @@ async def yourself():
 @routes.route("/soon")
 async def soon():
     return await render_template("soon.html")
+
+@routes.route("/csoon")
+async def csoon():
+    return await render_template("csoon.html")
 
 @routes.route('/frontend/static/<path:filename>')
 async def static_files(filename):
@@ -114,7 +118,7 @@ async def atualizar_estado_loja():
     return Response("Estado da loja atualizado com sucesso!", status=200, content_type="text/plain")
 
 #carrousel
-
+'''
 carrossel_routes = Blueprint('carrossel_routes', __name__)
 
 @carrossel_routes.route('/api/carrossel/imagens', methods=['GET'])
@@ -123,7 +127,6 @@ async def listar_imagens():
         result = await session.execute(select(CarouselImage))
         imagens = result.scalars().all()
 
-    # Vamos devolver só id e filename para o front construir URLs das imagens
     imagens_resumo = [
         {
             "id": img.id,
@@ -183,3 +186,4 @@ async def remover_imagem(imagem_id):
         await session.delete(imagem)
         await session.commit()
     return Response('Imagem removida', status=200)
+    '''

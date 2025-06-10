@@ -1,7 +1,6 @@
 /* Importar fontes */
 @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700&family=Prata&display=swap');
 
-/* Variáveis de cor (podes colocar isto no início do CSS para fácil manutenção) */
 :root {
   --preto-profundo: #000000;
   --amarelo-estrela: #FFDF3A;
@@ -17,7 +16,6 @@
   --sucesso: #6BA539;
 }
 
-/* Reset básico */
 * {
     margin: 0;
     padding: 0;
@@ -191,7 +189,7 @@ header::after {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: var(--preto-profundo);
+  background: rgba(0, 0, 0, 0.916);
   color: var(--branco-neve);
   display: flex;
   flex-direction: column;
@@ -252,7 +250,7 @@ header::after {
 }
 
 .banner {
-    background: #000;
+    background: #9a1616;
     width: 50%;
     color:#DADADA;
     display: flex;
