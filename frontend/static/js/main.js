@@ -1,6 +1,11 @@
-    window.addEventListener('load', () => {
+
+  window.addEventListener('load', () => {
     const loader = document.getElementById('loader');
-    if (loader) {
-        loader.style.display = 'none';
+    const content = document.getElementById('content');
+
+    if (loader && content) {
+      loader.style.display = 'none';
+      content.classList.remove('hidden');
     }
-    });
+  });
+
