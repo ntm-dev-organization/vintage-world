@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>resell | Vintage World</title>
-    <link rel="stylesheet" href="/frontend/static/css/resell.css">
-    <link rel="shortcut icon" href="/frontend/static/images/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="/frontend/static/images/favicon.png" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Tagesschrift&display=swap');
@@ -192,95 +191,111 @@
 }
 </style>
 
+<style>
+.menu-open .bar1 {
+  transform: rotate(45deg) translateY(8px);
+}
+.menu-open .bar2 {
+  opacity: 0;
+}
+.menu-open .bar3 {
+  transform: rotate(-45deg) translateY(-8px);
+}
+</style>
+<body class="m-0 p-0 box-border" >
+  <main class="hidden" id="content">
+    <header class="flex justify-between items-center py-5 px-8 sticky top-0 z-10 relative h-[150px] after:content-[''] after:absolute after:left-0 after:w-full after:bottom-[-15px] after:h-[120px] after:bg-[url('/frontend/static/images/banner.png')] after:bg-repeat-x after:bg-bottom after:bg-contain after:pointer-events-none after:z-[15]">
+          <div id="hamburger" onclick="toggleMenu()" class="hamburguer-menu group flex flex-col justify-between w-10 h-7 cursor-pointer p-1 z-[999] relative">
+              <span class="bar1 block bg-neutral-400 h-[3px] w-full rounded-sm transition-all duration-300 ease-in-out origin-center group-hover:bg-yellow-400"></span>
+              <span class="bar2 block bg-neutral-400 h-[3px] w-full rounded-sm transition-all duration-300 ease-in-out origin-center group-hover:bg-yellow-400"></span>
+              <span class="bar3 block bg-neutral-400 h-[3px] w-full rounded-sm transition-all duration-300 ease-in-out origin-center group-hover:bg-yellow-400"></span>
+          </div>
 
-    <main>
-        <header>
-            <div class="hamburguer-menu" onclick="toggleMenu()">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+            <nav id="menu" class="full-screen-menu fixed top-0 left-0 w-screen h-screen flex flex-col justify-center items-center z-[998] opacity-0 pointer-events-none transition-all duration-400 ease-[ease] transform -translate-y-5 bg-zinc-900">
+              <ul class="menu-items list-none p-0 m-0 text-center flex flex-col justify-center gap-[20px] flex-grow">
+                  <li class="mb-8"><a class="text-neutral-400 hover:text-yellow-400 text-2xl" href="/yourself">SHOP FOR YOUSELF</a></li>
 
-            <nav class="full-screen-menu hidden">
-            <ul class="menu-items">
-                <li class="margin"><a href="/yourself">SHOP FOR YOUSELF</a></li>
+                  <li><a class="text-neutral-400 hover:text-yellow-400 text-xl" href="/csoon">Tee Bulks</a></li>
+                  <li><a class="text-neutral-400 hover:text-yellow-400 text-xl" href="/csoon">Jacket Bulks</a></li>
+                  <li><a class="text-neutral-400 hover:text-yellow-400 text-xl" href="/csoon">Jean Bulks</a></li>
+                  <li><a class="text-neutral-400 hover:text-yellow-400 text-xl" href="/csoon">Hat Bulks</a></li>
+                  <li><a class="text-neutral-400 hover:text-yellow-400 text-xl" href="/csoon">Hoodies / Growneck Bulks</a></li>
+                  <li><a class="text-neutral-400 hover:text-yellow-400 text-xl" href="/csoon">Misterious Bulk</a></li>
+                  <li class="mb-8"><a class="text-neutral-400 hover:text-yellow-400 text-xl" href="/soon">Polo Bulk</a></li>
 
-                <li><a href="/csoon">Tee Bulks</a></li>
-                <li><a href="/csoon">Jacket Bulks</a></li>
-                <li><a href="/csoon">Jean Bulks</a></li>
-                <li><a href="/csoon">Hat Bulks</a></li>
-                <li><a href="/csoon">Hoodies / Growneck Bulks</a></li>
-                <li><a href="/csoon">Misterious Bulk</a></li>
-                <li class="margin"><a href="/soon">Polo Bulk</a></li>
+                  <li><a class="text-neutral-400 hover:text-yellow-400 text-xl" href="/csoon ">About Us</a></li>
+                  <li><a class="text-neutral-400 hover:text-yellow-400 text-xl" href="/csoon">Informations</a></li>
+                  <li><a class="text-neutral-400 hover:text-yellow-400 text-xl" href="/csoon">Contact Us</a></li>
+              </ul>
 
-                <li><a href="/csoon ">About Us</a></li>
-                <li><a href="/csoon">Informations</a></li>
-                <li><a href="/csoon">Contact Us</a></li>
-            </ul>
-
-            <footer class="menu-footer">
-                <a href="https://www.instagram.com/v8ntage_world/" target="_blank">Instagram</a>
+            <footer class="menu-footer mb-[40px] flex gap-[10px]">
+                <a class="text-neutral-300 hover:text-yellow-400" href="https://www.instagram.com/v8ntage_world/" target="_blank">Instagram</a>
                 <a href="">|</a>
-                <a href="/csoon" target="_blank">TikTok</a>
+                <a class="text-neutral-300 hover:text-yellow-400" href="/csoon" target="_blank">TikTok</a>
             </footer>
             </nav>
 
             <div class="logo">
-                <img src="/frontend/static/images/logo_new.png" alt="logo">
+                <img class="h-[90px]" src="/frontend/static/images/favicon.png" alt="logo">
             </div>
             
-            <div class="icons">
+            <div class="icons flex gap-[20px]">
                 <div class="carrinho">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="w-[30px] h-[30px] fill-neutral-400 cursor-pointer transition-transform duration-200 hover:scale-110 hover:fill-yellow-400" viewBox="0 0 16 16">
                         <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1m3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1z"/>
                     </svg>
                 </div>
                 <div class="conta">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="w-[30px] h-[30px] fill-neutral-400 cursor-pointer transition-transform duration-200 hover:scale-110 hover:fill-yellow-400" viewBox="0 0 16 16">
                         <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
                     </svg>
                 </div>
             </div>
         </header>
+    <script>
+    function toggleMenu() {
+    const hamburger = document.getElementById("hamburger");
+    const menu = document.getElementById("menu");
 
-        <div class="shop">
+    hamburger.classList.toggle("menu-open");
+    menu.classList.toggle("opacity-100");
+    menu.classList.toggle("translate-y-0");
+    menu.classList.toggle("pointer-events-auto");
 
-            <div class="banner">
-                <h1>SHOP FOR RESELL</h1>
-            </div>
+    if (menu.classList.contains("opacity-100")) {
+        menu.classList.remove("opacity-0", "-translate-y-5", "pointer-events-none");
+    } else {
+        menu.classList.add("opacity-0", "-translate-y-5", "pointer-events-none");
+    }
+    }
+    </script>
 
-        <div class="cards">
-            {% for produto in produtos %}
-            <div class="card">
-                <div class="img-card">
-                    {% if produto.principal %}
-                        <img src="/frontend/static/uploads/{{ produto.principal }}" alt="{{ produto.name }}" />
-                    {% else %}
-                        <img src="/frontend/static/images/no-image.png" alt="Sem imagem" />
-                    {% endif %}
-                </div>
-                <div class="informations-card">
-                    <h1 class="product">{{ produto.name }}</h1>
-                    <p class="type">{{ produto.category|capitalize }}</p>
-                </div>
-            </div>
-            {% endfor %}
+      <div class=" shop w-full min-h-screen text-neutral-200 px-6 py-20">
+        <div class="banner text-center mb-12">
+          <h1 class="text-4xl font-semibold tracking-wider text-yellow-400 uppercase">SHOP FOR RESELL</h1>
         </div>
+
+        <div class="cards grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 max-w-7xl mx-auto">
+          {% for produto in produtos %}
+          <div class="card bg-zinc-800 rounded-2xl shadow-md overflow-hidden hover:scale-105 transition-transform duration-300">
+            <div class="img-card w-full h-64 overflow-hidden bg-zinc-700 flex items-center justify-center">
+              {% if produto.principal %}
+              <img src="/frontend/static/uploads/{{ produto.principal }}" alt="{{ produto.name }}" class="object-cover w-full h-full" />
+              {% else %}
+              <img src="/frontend/static/images/no-image.png" alt="Sem imagem" class="object-contain w-24 h-24" />
+              {% endif %}
+            </div>
+            <div class="informations-card p-5 text-center">
+              <h1 class="product text-lg font-medium text-yellow-400 uppercase">{{ produto.name }}</h1>
+              <p class="type text-sm text-neutral-400 mt-1">{{ produto.category|capitalize }}</p>
+            </div>
+          </div>
+          {% endfor %}
         </div>
+      </div>
     </main>
 </body>
 
-<script>
-  function toggleMenu() {
-    const menu = document.querySelector('.full-screen-menu');
-    menu.classList.toggle('hidden'); // Isto mostra ou esconde o menu
-  }
-
-  // (opcional) togglar classe visual do ícone de hambúrguer
-  document.querySelector('.hamburguer-menu').addEventListener('click', () => {
-    document.querySelector('.hamburguer-menu').classList.toggle('open');
-  });
-</script>
 <script>
         document.addEventListener("DOMContentLoaded", () => {
         const cart = document.querySelector(".carrinho");

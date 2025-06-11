@@ -3,10 +3,9 @@ from quart import Quart, redirect, request, session, render_template, send_from_
 from dotenv import load_dotenv
 from backend.api.produtos import listar_produtos
 from backend.db.database import async_session
-from backend.db.models import LojaEstado, Status, CarouselImage
+from backend.db.models import LojaEstado, Status
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
-import uuid
 
 
 load_dotenv()
