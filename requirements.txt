@@ -5,3 +5,4 @@ werkzeug==2.2.3
 sqlalchemy[asyncio]>=1.4
 asyncpg
 alembic
+httpx
