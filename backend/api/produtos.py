@@ -1,42 +1,84 @@
-from quart import Blueprint, request, redirect, abort, render_template
 import os
+import httpx
+import base64
 from sqlalchemy.future import select
 from sqlalchemy.exc import SQLAlchemyError
 from backend.db.database import async_session
 from backend.db.models import Produto
+from quart import Blueprint, request, redirect, abort, render_template
 
 produtos_api = Blueprint("produtos_api", __name__ , url_prefix="/api/produtos")
 
-UPLOAD_FOLDER = "frontend/static/uploads"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# Função de upload para Imgur
+IMGUR_CLIENT_ID = os.getenv("IMGUR_CLIENT_ID")
+if not IMGUR_CLIENT_ID:
+    raise RuntimeError("Variavel nao esta definida")
+
+async def upload_to_imgur(img_bytes: bytes) -> str:
+    encoded_image = base64.b64encode(img_bytes).decode()
+
+    headers = {
+        "Authorization": f"Client-ID {IMGUR_CLIENT_ID}"
+    }
+    data = {
+        "image": encoded_image,
+        "type": "base64"
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post("https://api.imgur.com/3/image", headers=headers, data=data)
+
+    if response.status_code == 200:
+        json_resp = response.json()
+        return json_resp['data']['link']
+    else:
+        print("Erro ao enviar imagem para Imgur:", response.text)
+        return None
 
 @produtos_api.route("/adicionar", methods=["POST"])
 async def adicionar_produto():
     form = await request.form
-    arquivos = await request.files
-    imagens = arquivos.getlist("images")
+    files = await request.files
+    imagens = files.getlist("images")
 
-    name = form.get("name")
-    price = float(form.get("price"))
-    sizes = form.getlist("sizes")
+    name = form.get("name", "").strip()
     category = form.get("category")
-    stripe_num = form.get("stripe_product_id")
+    stripe_num = form.get("stripe_product_id", "").strip()
+    tipo = form.get("tipo_produto")
     stock = int(form.get("stock_quantity", 0))
+    price = float(form.get("price_display", "0").replace(",", "."))
+
+    if category not in ("yourself", "resell"):
+        abort(400, "Categoria inválida")
+    if category == "yourself" and tipo not in ("camisola", "calcas"):
+        abort(400, "Tipo de produto inválido")
+
+    sizes = []
+    if category == "yourself":
+        if tipo == "camisola":
+            sizes = form.getlist("sizes")
+        else:
+            num = form.get("calcas_numero")
+            if num:
+                sizes = [str(int(num))]
+    else:
+        sizes = form.getlist("sizes")
 
     principal = None
     secundarias = []
 
-    for idx, imagem in enumerate(imagens):
-        if imagem:
-            filename = imagem.filename
-            caminho = os.path.join(UPLOAD_FOLDER, filename)
-            await imagem.save(caminho)
+    for idx, img in enumerate(imagens):
+        if img and img.filename:
+            img_bytes = img.read()
+            url = await upload_to_imgur(img_bytes)
+            if not url:
+                abort(500, "Erro ao enviar imagem para Imgur.")
             if idx == 0:
-                principal = filename
+                principal = url
             else:
-                secundarias.append(filename)
+                secundarias.append(url)
 
-    novo_produto = Produto(
+    novo = Produto(
         name=name,
         price=price,
         sizes=sizes,
@@ -47,18 +89,15 @@ async def adicionar_produto():
         secundarias=secundarias
     )
 
-    async with async_session() as session:
+    async with async_session() as s:
         try:
-            session.add(novo_produto)
-            await session.commit()
-        except SQLAlchemyError as e:
-            await session.rollback()
-            print("Erro ao guardar no DB:", e)
-            return {"error": "Erro ao guardar no banco de dados"}, 500
+            s.add(novo)
+            await s.commit()
+        except SQLAlchemyError:
+            await s.rollback()
+            abort(500, "Erro a guardar produto no BD")
 
     return redirect("/admin")
-
-
 async def listar_produtos():
     async with async_session() as session:
         try:
@@ -72,7 +111,6 @@ async def listar_produtos():
 @produtos_api.route("/editar/<int:produto_id>", methods=["GET", "POST"])
 async def editar_produto(produto_id):
     form = await request.form
-    print("sizes recebidos:", form.getlist("sizes"))
     arquivos = await request.files
 
     async with async_session() as session:
@@ -87,31 +125,33 @@ async def editar_produto(produto_id):
         produto.stock = int(form.get("stock_quantity", produto.stock))
 
         imagem_principal = arquivos.get("principal")
-        if imagem_principal:
-            filename = imagem_principal.filename
-            caminho = os.path.join(UPLOAD_FOLDER, filename)
-            await imagem_principal.save(caminho)
-            produto.principal = filename
+        if imagem_principal and imagem_principal.filename:
+            img_bytes = imagem_principal.read()
+            url = await upload_to_imgur(img_bytes)
+            if not url:
+                abort(500, "Erro ao enviar imagem principal para Imgur.")
+            produto.principal = url
 
         novas_secundarias = arquivos.getlist("secundarias")
         if novas_secundarias:
-            novas = []
+            novas_urls = []
             for img in novas_secundarias:
-                filename = img.filename
-                caminho = os.path.join(UPLOAD_FOLDER, filename)
-                await img.save(caminho)
-                novas.append(filename)
-            produto.secundarias = novas
+                if img and img.filename:
+                    img_bytes = img.read()
+                    url = await upload_to_imgur(img_bytes)
+                    if not url:
+                        abort(500, "Erro ao enviar imagem secundária para Imgur.")
+                    novas_urls.append(url)
+            produto.secundarias = novas_urls
 
         try:
             await session.commit()
         except Exception as e:
             await session.rollback()
             print("ERRO AO EDITAR PRODUTO:", e)
-            return "Erro ao editar produto", 5000
+            return "Erro ao editar produto", 500
 
     return redirect("/admin")
-
 
 @produtos_api.route("/remover/<int:produto_id>", methods=["DELETE"])
 async def remover_produto(produto_id):

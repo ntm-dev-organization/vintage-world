@@ -15,7 +15,7 @@ app.register_blueprint(produtos_site)
 
 async def main():
     await asyncio.gather(
-        app.run_task(host="0.0.0.0", port=5000),
+        app.run_task(host="0.0.0.0", port=5050),
     )
 
 if __name__ == "__main__":

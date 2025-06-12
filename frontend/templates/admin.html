@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Painel de Administração | Vintage World</title>
-  <link rel="shortcut icon" href="/frontend/static/images/logo.png" type="image/x-icon">
+  <link rel="shortcut icon" href="/frontend/static/images/favicon.png" type="image/x-icon">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     function showTab(tabId) {
@@ -81,7 +81,36 @@
         <input type="hidden" name="price" id="hiddenPriceYourself" />
       </div>
       <div>
-        <label class="block font-medium text-gray-700 mb-2">Tamanhos disponíveis</label>
+        <label class="block font-medium text-gray-700 mb-1">Tipo de Produto</label>
+        <select name="tipo_produto" id="tipoProdutoSelect" class="w-full border rounded px-3 py-2" required>
+          <option value="">Seleciona</option>
+          <option value="camisola">Camisola</option>
+          <option value="calcas">Calças</option>
+        </select>
+      </div>
+
+      <script>
+        document.getElementById('tipoProdutoSelect').addEventListener('change', function () {
+          const selected = this.value;
+          const tamanhos = document.getElementById('tamanhosContainer');
+          const calcas = document.getElementById('numeroCalcasContainer');
+
+          if (selected === 'camisola') {
+            tamanhos.classList.remove('hidden');
+            calcas.classList.add('hidden');
+          } else if (selected === 'calcas') {
+            tamanhos.classList.add('hidden');
+            calcas.classList.remove('hidden');
+          } else {
+            tamanhos.classList.add('hidden');
+            calcas.classList.add('hidden');
+          }
+        });
+      </script>
+
+      <!-- Tamanhos (só aparece se for camisola) -->
+      <div id="tamanhosContainer" class="hidden">
+        <label class="block font-medium text-gray-700 mb-2 mt-4">Tamanhos disponíveis</label>
         <div class="flex gap-4 flex-wrap">
           <label class="inline-flex items-center gap-2">
             <input type="checkbox" name="sizes" value="S" class="rounded border-gray-300" />
@@ -100,6 +129,18 @@
             <span>XL</span>
           </label>
         </div>
+      </div>
+
+      <!-- Número (só aparece se for calças) -->
+      <div id="numeroCalcasContainer" class="hidden">
+        <label class="block font-medium text-gray-700 mt-4">Número (Calças)</label>
+        <input 
+          type="number" 
+          name="calcas_numero" 
+          min="28" max="50" step="1"
+          class="w-full border rounded px-3 py-2"
+          placeholder="Ex: 40"
+        />
       </div>
       <div>
         <label class="block font-medium text-gray-700">Número do Produto Stripe</label>
@@ -228,7 +269,7 @@
         <div id="produto-{{ produto.id }}" class="produto p-4 border rounded shadow hover:shadow-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white relative">
           <div class="flex items-center gap-4">
             {% if produto.principal %}
-              <img src="/static/uploads/{{ produto.principal }}" alt="Imagem do produto" class="w-24 h-24 object-cover rounded" />
+              <img src="{{ produto.principal }}" alt="Imagem do produto" class="w-24 h-24 object-cover rounded" />
             {% else %}
               <div class="w-24 h-24 bg-gray-200 rounded flex items-center justify-center text-gray-400">Sem imagem</div>
             {% endif %}
@@ -270,6 +311,7 @@
                 <label><input type="checkbox" name="sizes" value="M" class="mr-1 sizeCheckbox" />M</label>
                 <label><input type="checkbox" name="sizes" value="L" class="mr-1 sizeCheckbox" />L</label>
                 <label><input type="checkbox" name="sizes" value="XL" class="mr-1 sizeCheckbox" />XL</label>
+                <label><input type="checkbox" name="sizes" value="Unique" class="mr-1 sizeCheckbox" />Unique</label>
               </div>
             </div>
             <div>
@@ -283,7 +325,7 @@
               <label class="block font-medium text-gray-700 mb-1">Imagem atual</label>
               <img src="" alt="Imagem Atual" class="imagemAtual w-32 h-32 object-cover rounded mb-2" />
               <label class="block font-medium text-gray-700 mb-1">Trocar imagem (opcional)</label>
-              <input type="file" name="image" accept="image/*" class="w-full" />
+              <input type="file" name="image" multiple accept="image/*" class="w-full" />
             </div>
             <div class="imagens-secundarias-container flex gap-2 mt-2 flex-wrap"></div>
             <div class="flex gap-2 items-center">
@@ -436,7 +478,7 @@ function fecharFormularioEdicao(produtoId) {
 </script>
 
 <!-- Estado da Loja -->
-<div id="estado-loja" class="tab-content text-center space-y-10 mt-12">
+<div id="estado-loja" class="tab-content text-center space-y-10 mt-12 hidden">
   <h2 class="text-xl font-semibold text-gray-800">Estado Atual da Loja</h2>
   
   <p id="estado-loja-texto" class="text-lg font-semibold">
