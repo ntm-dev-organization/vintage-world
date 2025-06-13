@@ -9,7 +9,6 @@ from quart import Blueprint, request, redirect, abort, render_template
 
 produtos_api = Blueprint("produtos_api", __name__ , url_prefix="/api/produtos")
 
-# Função de upload para Imgur
 IMGUR_CLIENT_ID = os.getenv("IMGUR_CLIENT_ID")
 if not IMGUR_CLIENT_ID:
     raise RuntimeError("Variavel nao esta definida")

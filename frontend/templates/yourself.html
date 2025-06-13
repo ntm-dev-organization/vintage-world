@@ -194,6 +194,7 @@
 }
 </style>
 <body class="m-0 p-0 box-border">
+  <main class="hidden" id="content">
     <header class="flex justify-between items-center py-5 px-8 sticky top-0 z-10 relative h-[150px] after:content-[''] after:absolute after:left-0 after:w-full after:bottom-[-15px] after:h-[120px] after:bg-[url('/frontend/static/images/banner.png')] after:bg-repeat-x after:bg-bottom after:bg-contain after:pointer-events-none after:z-[15]">
 
     <div id="hamburger" onclick="toggleMenu()" class="hamburguer-menu group flex flex-col justify-between w-10 h-7 cursor-pointer p-1 z-[999] relative">
@@ -234,6 +235,26 @@
             </div>
         </div>
     </header>
+    <div class="shop w-full min-h-screen text-neutral-200 px-6 py-20">
+      <div class="cards grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 max-w-7xl mx-auto">
+        {% for produto in produtos %}
+        <div class="card bg-zinc-800 rounded-2xl shadow-md overflow-hidden hover:scale-105 transition-transform duration-300">
+          <div class="img-card w-full h-64 overflow-hidden bg-zinc-700 flex items-center justify-center">
+            {% if produto.principal %}
+            <img src="{{ produto.principal }}" alt="{{ produto.name }}" class="object-cover w-full h-full" />
+            {% else %}
+            <img src="/frontend/static/images/no-image.png" alt="Sem imagem" class="object-contain w-24 h-24" />
+            {% endif %}
+          </div>
+          <div class="informations-card p-5 text-center">
+            <h1 class="product text-lg font-medium text-yellow-400 uppercase">{{ produto.name }}</h1>
+            <p class="type text-sm text-neutral-400 mt-1">{{ produto.quantity }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </main>
   <script>
   function toggleMenu() {
   const hamburger = document.getElementById("hamburger");
@@ -251,6 +272,6 @@
   }
   }
   </script>
-    <script src="/frontend/static/js/main.js"></script>
+  <script src="/frontend/static/js/main.js"></script>
 </body>
 </html>
