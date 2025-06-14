@@ -6,6 +6,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from backend.db.database import async_session
 from backend.db.models import Produto
 from quart import Blueprint, request, redirect, abort, render_template
+from backend.db.models import LojaEstado
+from sqlalchemy.orm import selectinload
 
 produtos_api = Blueprint("produtos_api", __name__ , url_prefix="/api/produtos")
 
@@ -215,3 +217,19 @@ async def resell():
         produtos = result.scalars().all()
 
     return await render_template("resell.html", produtos=produtos)
+
+@produtos_site.route("/yourself")
+async def yourself():
+    async with async_session() as session:
+        result = await session.execute(
+            select(LojaEstado).where(LojaEstado.id == 1).options(selectinload(LojaEstado.status))
+        )
+        estado = result.scalars().first()
+
+        if not estado or not estado.status or estado.status.name != "on":
+            return await render_template("soon.html")
+
+        result = await session.execute(select(Produto).where(Produto.category == "resell"))
+        produtos = result.scalars().all()
+
+    return await render_template("yourself.html", produtos=produtos)

@@ -240,10 +240,10 @@
         {% for produto in produtos %}
         <div class="card bg-zinc-800 rounded-2xl shadow-md overflow-hidden hover:scale-105 transition-transform duration-300">
           <div class="img-card w-full h-64 overflow-hidden bg-zinc-700 flex items-center justify-center">
-            {% if produto.principal %}
-            <img src="{{ produto.principal }}" alt="{{ produto.name }}" class="object-cover w-full h-full" />
+            {% if produto.image_url %}
+              <img src="{{ produto.image_url }}" alt="{{ produto.name }}" class="object-cover w-full h-full" />
             {% else %}
-            <img src="/frontend/static/images/no-image.png" alt="Sem imagem" class="object-contain w-24 h-24" />
+              <img src="/frontend/static/images/no-image.png" alt="Sem imagem" class="object-contain w-24 h-24" />
             {% endif %}
           </div>
           <div class="informations-card p-5 text-center">

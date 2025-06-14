@@ -20,10 +20,6 @@ routes = Blueprint('routes', __name__)
 async def index():
     return await render_template("index.html")
 
-@routes.route("/yourself")
-async def yourself():
-    return await render_template("yourself.html")
-
 @routes.route("/soon")
 async def soon():
     return await render_template("soon.html")
