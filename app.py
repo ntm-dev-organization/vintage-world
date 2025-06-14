@@ -17,7 +17,7 @@ app.register_blueprint(carrossel_api)
 
 async def main():
     await asyncio.gather(
-        app.run_task(host="0.0.0.0", port=5050),
+        app.run_task(host="0.0.0.0", port=5000),
     )
 
 if __name__ == "__main__":

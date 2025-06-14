@@ -1,7 +1,9 @@
 {
   "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.5",
     "tailwind-scrollbar": "^4.0.2",
-    "tailwindcss": "^4.1.8"
+    "tailwindcss": "^4.1.10"
   },
   "dependencies": {
     "@tailwindcss/aspect-ratio": "^0.4.2",
@@ -10,5 +12,19 @@
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-debug-screens": "^3.0.1",
     "tailwindcss-fluid-type": "^2.0.7"
-  }
+  },
+  "name": "vintage-world",
+  "version": "1.0.0",
+  "description": "**Website**: https://vintageworld.pt (In development)",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/input.css -o ./static/css/output.css --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
