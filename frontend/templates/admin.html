@@ -552,39 +552,42 @@ document.addEventListener("DOMContentLoaded", obterEstadoLoja);
 </script>
 
 
-  <!-- Carrousel-->
-<div id="tab-carrossel" class="hidden p-4">
+<!-- Carrousel -->
+<div id="carrossel" class="hidden p-4 mt-12">
 
   <h2 class="text-xl font-semibold mb-4">Gerir Imagens do Carrossel</h2>
 
   <form id="form-adicionar-imagem" enctype="multipart/form-data">
     <label class="block mb-2 font-medium" for="imagem-carrossel">Selecionar imagem para adicionar:</label>
     <input type="file" id="imagem-carrossel" name="imagem" accept="image/*" required class="mb-4">
-    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Adicionar Imagem</button>
+    <button type="submit" multiple class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Adicionar Imagem</button>
   </form>
 
   <hr class="my-6">
 
   <h3 class="text-lg font-semibold mb-2">Imagens Atuais</h3>
-  <div id="lista-imagens-carrossel" class="grid grid-cols-3 gap-4">
-  </div>
+  <div id="lista-imagens-carrossel" class="grid grid-cols-3 gap-4"></div>
 
 </div>
 
 <script>
-  // Handle form para adicionar imagem
+  // Envia a imagem selecionada para o backend
   const form = document.getElementById('form-adicionar-imagem');
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+
     const inputFile = document.getElementById('imagem-carrossel');
     const file = inputFile.files[0];
-    if (!file) return alert("Por favor selecione uma imagem.");
+    if (!file) {
+      alert("Por favor selecione uma imagem.");
+      return;
+    }
 
     const formData = new FormData();
     formData.append('imagem', file);
 
     try {
-      const res = await fetch('/api/carrossel/imagens', {
+      const res = await fetch('/api/carrossel/carrouselimg', {
         method: 'POST',
         body: formData
       });
@@ -601,59 +604,63 @@ document.addEventListener("DOMContentLoaded", obterEstadoLoja);
       alert('Erro na comunicação com o servidor.');
     }
   });
-});
 
-async function carregarImagensCarrossel() {
-  try {
-    const res = await fetch('/api/carrossel/imagens');
-    if (!res.ok) throw new Error('Erro ao carregar imagens');
-    const imagens = await res.json();
+  // Carrega as imagens atuais do carrossel e mostra na página
+  async function carregarImagensCarrossel() {
+    try {
+      const res = await fetch('/api/carrossel/carrouselimg');
+      if (!res.ok) throw new Error('Erro ao carregar imagens');
+      const imagens = await res.json();
 
-    const lista = document.getElementById('lista-imagens-carrossel');
-    lista.innerHTML = '';
+      const lista = document.getElementById('lista-imagens-carrossel');
+      lista.innerHTML = '';
 
-    imagens.forEach(imagem => {
-      const div = document.createElement('div');
-      div.className = 'relative';
+      imagens.forEach(imagem => {
+        const div = document.createElement('div');
+        div.className = 'relative';
 
-      const img = document.createElement('img');
-      img.src = imagem.url;  // URL que serve a imagem do backend
-      img.alt = imagem.filename || 'Imagem Carrossel';
-      img.className = 'w-full h-32 object-cover rounded';
+        const img = document.createElement('img');
+        img.src = imagem.url;
+        img.alt = imagem.filename || 'Imagem Carrossel';
+        img.className = 'w-full h-32 object-cover rounded';
 
-      const btnRemover = document.createElement('button');
-      btnRemover.textContent = '❌';
-      btnRemover.className = 'absolute top-1 right-1 bg-red-600 text-white rounded px-1 hover:bg-red-700';
-      btnRemover.onclick = () => removerImagemCarrossel(imagem.id);
+        const btnRemover = document.createElement('button');
+        btnRemover.textContent = '❌';
+        btnRemover.className = 'absolute top-1 right-1 bg-red-600 text-white rounded px-1 hover:bg-red-700';
+        btnRemover.onclick = () => removerImagemCarrossel(imagem.id);
 
-      div.appendChild(img);
-      div.appendChild(btnRemover);
-      lista.appendChild(div);
-    });
-  } catch (err) {
-    alert('Erro ao carregar imagens do carrossel.');
-  }
-}
-
-async function removerImagemCarrossel(id) {
-  if (!confirm('Quer mesmo remover esta imagem do carrossel?')) return;
-
-  try {
-    const res = await fetch(`/api/carrossel/imagens/${id}`, {
-      method: 'DELETE'
-    });
-    if (res.ok) {
-      alert('Imagem removida!');
-      carregarImagensCarrossel();
-    } else {
-      const texto = await res.text();
-      alert('Erro ao remover imagem: ' + texto);
+        div.appendChild(img);
+        div.appendChild(btnRemover);
+        lista.appendChild(div);
+      });
+    } catch (err) {
+      alert('Erro ao carregar imagens do carrossel.');
     }
-  } catch (err) {
-    alert('Erro na comunicação com o servidor.');
   }
-}
+
+  // Remove imagem selecionada após confirmação
+  async function removerImagemCarrossel(id) {
+    if (!confirm('Quer mesmo remover esta imagem do carrossel?')) return;
+
+    try {
+      const res = await fetch(`/api/carrossel/carrouselimg/${id}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        alert('Imagem removida!');
+        carregarImagensCarrossel();
+      } else {
+        const texto = await res.text();
+        alert('Erro ao remover imagem: ' + texto);
+      }
+    } catch (err) {
+      alert('Erro na comunicação com o servidor.');
+    }
+  }
+
+  window.onload = carregarImagensCarrossel;
 </script>
+
 
 
 <script>

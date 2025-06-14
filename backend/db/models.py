@@ -50,9 +50,9 @@ class LojaEstado(Base):
     def __repr__(self):
         return f"<LojaEstado(id={self.id}, status={self.status.name})>"
     
-class CarouselImage(Base):
-    __tablename__ = "carousel_images"
+
+class CarrosselImagem(Base):
+    __tablename__ = "carrossel_imagens"
     id = Column(Integer, primary_key=True)
+    url = Column(String, nullable=False)
     filename = Column(String, nullable=False)
-    content_type = Column(String, nullable=False)
-    data = Column(LargeBinary, nullable=False)

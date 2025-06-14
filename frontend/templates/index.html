@@ -13,6 +13,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vintage World</title>
     <link rel="stylesheet" href="/frontend/static/css/index.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="shortcut icon" href="/frontend/static/images/favicon.png" type="image/x-icon">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Tagesschrift&display=swap');
@@ -197,9 +198,6 @@
     transform: skewX(0deg) rotate(0deg);
   }
 }
-.hidden {
-  display: none;
-}
 </style>
 
 
@@ -208,15 +206,52 @@
             <img src="/frontend/static/images/favicon.png" alt="Logo Vintage World">
         </div>
 
-        <div class="model">
-            <div class="carousel-container">
-                <div class="carousel-track">
-                {% for img in images %}
-                    <img src="{{ img.image_url }}" alt="Imagem do carrossel">
-                {% endfor %}
-                </div>
+        <div class="model overflow-hidden w-full max-w-3xl mx-auto">
+          <div class="carousel-container overflow-hidden">
+            <div class="carousel-track flex transition-transform duration-500 ease-in-out">
+              <!-- As imagens serão inseridas aqui via JS -->
             </div>
+          </div>
         </div>
+        <script>
+          const track = document.querySelector('.carousel-track');
+          let slides = [];
+          let currentIndex = 0;
+
+          function updateSlidePosition() {
+            track.style.transform = `translateX(-${currentIndex * 100}%)`;
+          }
+
+          function autoPlay() {
+            if (slides.length === 0) return;
+            currentIndex = (currentIndex + 1) % slides.length;
+            updateSlidePosition();
+          }
+
+          async function loadImages() {
+            try {
+              const response = await fetch('/api/carrossel/carrouselimg');
+              const data = await response.json();
+
+              data.forEach(img => {
+                const imageElement = document.createElement('img');
+                imageElement.src = img.image_url;
+                imageElement.alt = 'Imagem do carrossel';
+                imageElement.className = 'w-full flex-shrink-0 object-cover';
+                track.appendChild(imageElement);
+              });
+
+              slides = Array.from(track.children); // Atualiza os slides depois de carregar
+
+            } catch (error) {
+              console.error('Erro ao carregar imagens do carrossel:', error);
+            }
+          }
+
+          loadImages();
+          setInterval(autoPlay, 3000);
+        </script>
+
 
         <div class="center">
             <h1 class="bold"><a href="/resell" class="bold_a">SHOP TO RESELL</a></h1>
@@ -253,25 +288,6 @@
             window.open("", "_blank");
         };
     });
-</script>
-
-<script>
-
-    //carrousel
-  const track = document.querySelector('.carousel-track');
-  const slides = Array.from(track.children);
-  let currentIndex = 0;
-
-  function updateSlidePosition() {
-    track.style.transform = `translateX(-${currentIndex * 100}%)`;
-  }
-
-  function autoPlay() {
-    currentIndex = (currentIndex + 1) % slides.length;
-    updateSlidePosition();
-  }
-
-  setInterval(autoPlay, 3000);
 </script>
 <script src="/frontend/static/js/main.js"></script>
 </html>

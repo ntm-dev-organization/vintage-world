@@ -1,11 +1,14 @@
 import os
-from quart import Quart, redirect, request, session, render_template, send_from_directory, url_for, Blueprint, Response, abort
+import base64
+import httpx
+from quart import Quart, redirect, request, session, render_template, send_from_directory, url_for, Blueprint, Response, abort, jsonify
 from dotenv import load_dotenv
 from backend.api.produtos import listar_produtos
 from backend.db.database import async_session
-from backend.db.models import LojaEstado, Status
+from backend.db.models import LojaEstado, Status, CarrosselImagem
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
+from sqlalchemy.exc import SQLAlchemyError
 
 
 load_dotenv()
@@ -117,72 +120,91 @@ async def atualizar_estado_loja():
     return Response("Estado da loja atualizado com sucesso!", status=200, content_type="text/plain")
 
 #carrousel
-'''
-carrossel_routes = Blueprint('carrossel_routes', __name__)
+carrossel_api = Blueprint("carrossel_api", __name__, url_prefix="/api/carrossel")
 
-@carrossel_routes.route('/api/carrossel/imagens', methods=['GET'])
+IMGUR_CLIENT_ID = os.getenv("IMGUR_CLIENT_ID")
+if not IMGUR_CLIENT_ID:
+    raise RuntimeError("Variavel IMGUR_CLIENT_ID não definida")
+
+async def upload_to_imgur(img_bytes: bytes) -> str:
+    encoded_image = base64.b64encode(img_bytes).decode()
+
+    headers = {
+        "Authorization": f"Client-ID {IMGUR_CLIENT_ID}"
+    }
+    data = {
+        "image": encoded_image,
+        "type": "base64"
+    }
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post("https://api.imgur.com/3/image", headers=headers, data=data)
+
+    if response.status_code == 200:
+        json_resp = response.json()
+        return json_resp['data']['link']
+    else:
+        print("Erro ao enviar imagem para Imgur:", response.text)
+        return None
+
+@carrossel_api.route("/carrouselimg", methods=["POST"])
+async def adicionar_imagem():
+    files = await request.files
+    imagem = files.get("imagem")
+    if not imagem or not imagem.filename:
+        abort(400, "Imagem não enviada")
+
+    img_bytes = imagem.read()
+    url = await upload_to_imgur(img_bytes)
+    if not url:
+        abort(500, "Erro ao enviar imagem para Imgur.")
+
+    nova_imagem = CarrosselImagem(url=url, filename=imagem.filename)
+    async with async_session() as session:
+        try:
+            session.add(nova_imagem)
+            await session.commit()
+        except SQLAlchemyError as e:
+            await session.rollback()
+            print("Erro ao guardar imagem no BD:", e)
+            abort(500, "Erro ao guardar imagem no banco de dados")
+
+    return jsonify({
+        "id": nova_imagem.id,
+        "url": url,
+        "filename": imagem.filename
+    })
+
+@carrossel_api.route("/carrouselimg", methods=["GET"])
 async def listar_imagens():
     async with async_session() as session:
-        result = await session.execute(select(CarouselImage))
-        imagens = result.scalars().all()
+        try:
+            result = await session.execute(select(CarrosselImagem))
+            imagens = result.scalars().all()
 
-    imagens_resumo = [
-        {
-            "id": img.id,
-            "filename": img.filename,
-            "url": f"/api/carrossel/imagens/{img.id}/img"
-        }
-        for img in imagens
-    ]
-    return jsonify(imagens_resumo)
+            return jsonify([
+                {
+                    "id": img.id,
+                    "url": img.url,
+                    "filename": img.filename
+                } for img in imagens
+            ])
+        except SQLAlchemyError as e:
+            print("Erro ao listar imagens do carrossel:", e)
+            abort(500, "Erro ao listar imagens")
 
-
-@carrossel_routes.route('/api/carrossel/imagens', methods=['POST'])
-async def adicionar_imagem():
-    form = await request.form
-    if 'imagem' not in form:
-        return Response('Nenhuma imagem enviada', status=400)
-
-    file = (await request.files)['imagem']
-    if file.filename == '':
-        return Response('Ficheiro inválido', status=400)
-
-    # Validação simples do content-type
-    if not file.content_type.startswith('image/'):
-        return Response('Formato de imagem não suportado', status=400)
-
-    data = await file.read()
-    nova_imagem = CarouselImage(
-        id=str(uuid.uuid4()),
-        filename=file.filename,
-        content_type=file.content_type,
-        data=data
-    )
-
+@carrossel_api.route("/carrouselimg/<int:id>", methods=["DELETE"])
+async def remover_imagem(id):
     async with async_session() as session:
-        session.add(nova_imagem)
-        await session.commit()
+        try:
+            imagem = await session.get(CarrosselImagem, id)
+            if not imagem:
+                abort(404, "Imagem não encontrada")
 
-    return Response('Imagem adicionada com sucesso!', status=200)
-
-
-@carrossel_routes.route('/api/carrossel/imagens/<imagem_id>/img', methods=['GET'])
-async def servir_imagem(imagem_id):
-    async with async_session() as session:
-        imagem = await session.get(CarouselImage, imagem_id)
-        if not imagem:
-            return Response('Imagem não encontrada', status=404)
-
-        return Response(imagem.data, content_type=imagem.content_type)
-
-
-@carrossel_routes.route('/api/carrossel/imagens/<imagem_id>', methods=['DELETE'])
-async def remover_imagem(imagem_id):
-    async with async_session() as session:
-        imagem = await session.get(CarouselImage, imagem_id)
-        if not imagem:
-            return Response('Imagem não encontrada', status=404)
-        await session.delete(imagem)
-        await session.commit()
-    return Response('Imagem removida', status=200)
-    '''
+            await session.delete(imagem)
+            await session.commit()
+            return "", 204
+        except SQLAlchemyError as e:
+            await session.rollback()
+            print("Erro ao remover imagem:", e)
+            abort(500, "Erro ao remover imagem")
