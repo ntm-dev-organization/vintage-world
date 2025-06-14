@@ -209,7 +209,6 @@
         <div class="model overflow-hidden w-full max-w-3xl mx-auto">
           <div class="carousel-container overflow-hidden">
             <div class="carousel-track flex transition-transform duration-500 ease-in-out">
-              <!-- As imagens serão inseridas aqui via JS -->
             </div>
           </div>
         </div>
@@ -235,13 +234,13 @@
 
               data.forEach(img => {
                 const imageElement = document.createElement('img');
-                imageElement.src = img.image_url;
+                imageElement.src = img.url;
                 imageElement.alt = 'Imagem do carrossel';
                 imageElement.className = 'w-full flex-shrink-0 object-cover';
                 track.appendChild(imageElement);
               });
 
-              slides = Array.from(track.children); // Atualiza os slides depois de carregar
+              slides = Array.from(track.children);
 
             } catch (error) {
               console.error('Erro ao carregar imagens do carrossel:', error);
