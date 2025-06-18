@@ -208,7 +208,7 @@ async def mostrar_produto(produto_id):
             import json
             sizes = json.loads(sizes)
 
-        return await render_template("product.html", produto=produto, sizes=sizes)
+        return await render_template("produto_resell.html", produto=produto, sizes=sizes)
     
 @produtos_site.route("/resell")
 async def resell():
