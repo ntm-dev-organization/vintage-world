@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 from sqlalchemy.exc import SQLAlchemyError
 from backend.db.database import async_session
 from backend.db.models import Produto
-from quart import Blueprint, request, redirect, abort, render_template
+from quart import Blueprint, request, redirect, abort, render_template, session, url_for
 from backend.db.models import LojaEstado
 from sqlalchemy.orm import selectinload
 
@@ -233,3 +233,97 @@ async def yourself():
         produtos = result.scalars().all()
 
     return await render_template("yourself.html", produtos=produtos)
+
+cart_api = Blueprint("cart_api", __name__, url_prefix="/cart")
+
+@cart_api.route("/add/<int:produto_id>", methods=["POST"])
+async def add_to_cart(produto_id):
+    form = await request.form
+    quantity = int(form.get("quantity", 1))
+    size = form.get("size", None)
+
+    if quantity < 1:
+        quantity = 1
+
+    async with async_session() as session_db:
+        produto = await session_db.get(Produto, produto_id)
+        if not produto:
+            abort(404, "Product not found")
+
+        if quantity > produto.stock:
+            quantity = produto.stock
+
+    cart = session.get("cart", {})
+
+    key = f"{produto_id}:{size or 'unique'}"
+
+    if key in cart:
+        cart[key]["quantity"] += quantity
+    else:
+        cart[key] = {
+            "product_id": produto_id,
+            "name": produto.name,
+            "price": float(produto.price),
+            "size": size or "unique",
+            "quantity": quantity,
+            "stripe_num": produto.stripe_num,
+            "principal": produto.principal,
+        }
+
+    session["cart"] = cart
+
+    return redirect(url_for("cart_api.view_cart"))
+
+
+@cart_api.route("/")
+async def view_cart():
+    cart = session.get("cart", {})
+    return await render_template("cart.html", cart=cart)
+
+@cart_api.route("/remove/<string:key>", methods=["POST"])
+async def remove_item(key):
+    cart = session.get("cart", {})
+    if key in cart:
+        cart.pop(key)
+        session["cart"] = cart
+    return redirect(url_for("cart_api.view_cart"))
+
+
+@cart_api.route("/update", methods=["POST"])
+async def update_cart():
+    form = await request.form
+    quantities = form.get("quantities")
+
+    cart = session.get("cart", {})
+
+    async with async_session() as session_db:
+        for key, quantity_str in quantities.items():
+            try:
+                quantity = int(quantity_str)
+                if quantity < 1:
+                    quantity = 1
+            except ValueError:
+                quantity = 1
+
+            if key in cart:
+                product_id = cart[key]["product_id"]
+                produto = await session_db.get(Produto, product_id)
+                if produto:
+
+                    if quantity > produto.stock:
+                        quantity = produto.stock
+                else:
+
+                    cart.pop(key)
+                    continue
+
+                cart[key]["quantity"] = quantity
+
+    session["cart"] = cart
+
+    return redirect(url_for("cart_api.view_cart"))
+
+@cart_api.route("/clear", methods=["POST"])
+async def clear_cart():
+    session["cart"] = {}
+    return redirect(url_for("cart_api.view_cart"))

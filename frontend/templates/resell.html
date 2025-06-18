@@ -212,7 +212,7 @@
 
             <nav id="menu" class="full-screen-menu fixed top-0 left-0 w-screen h-screen flex flex-col justify-center items-center z-[998] opacity-0 pointer-events-none transition-all duration-400 ease-[ease] transform -translate-y-5 bg-zinc-900">
               <ul class="menu-items list-none p-0 m-0 text-center flex flex-col justify-center gap-[20px] flex-grow">
-                  <li class="mb-8"><a class="text-neutral-400 hover:text-yellow-400 text-2xl" href="/soon">SHOP FOR YOUSELF</a></li>
+                  <li class="mb-8"><a class="text-neutral-400 hover:text-yellow-400 text-2xl" href="/yourself">SHOP FOR YOUSELF</a></li>
 
                   <li><a class="text-neutral-400 hover:text-yellow-400 text-xl" href="/csoon">Tee Bulks</a></li>
                   <li><a class="text-neutral-400 hover:text-yellow-400 text-xl" href="/csoon">Jacket Bulks</a></li>
@@ -268,7 +268,6 @@
     }
     }
     </script>
-
       <div class="shop w-full min-h-screen text-neutral-200 px-6 py-20">
         <div class="banner text-center mb-12">
           <h1 class="text-4xl font-semibold tracking-wider text-yellow-400 uppercase">SHOP FOR RESELL</h1>
@@ -276,7 +275,7 @@
 
         <div class="cards grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 max-w-7xl mx-auto">
           {% for produto in produtos %}
-          <div class="card bg-zinc-800 rounded-2xl shadow-md overflow-hidden hover:scale-105 transition-transform duration-300">
+          <a href="/produto/{{ produto.id }}" class="card bg-zinc-800 rounded-2xl shadow-md overflow-hidden hover:scale-105 transition-transform duration-300 block">
             <div class="img-card w-full h-64 overflow-hidden bg-zinc-700 flex items-center justify-center">
               {% if produto.principal %}
               <img src="/frontend/static/uploads/{{ produto.principal }}" alt="{{ produto.name }}" class="object-cover w-full h-full" />
@@ -288,7 +287,7 @@
               <h1 class="product text-lg font-medium text-yellow-400 uppercase">{{ produto.name }}</h1>
               <p class="type text-sm text-neutral-400 mt-1">{{ produto.category|capitalize }}</p>
             </div>
-          </div>
+          </a>
           {% endfor %}
         </div>
       </div>
