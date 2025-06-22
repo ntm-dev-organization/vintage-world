@@ -21,3 +21,5 @@ async def seed_loja_estado():
 
 if __name__ == "__main__":
     asyncio.run(seed_loja_estado())
+
+#comando: python -m backend.db.seeds.seed_loja_estado 

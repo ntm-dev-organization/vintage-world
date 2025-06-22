@@ -6,14 +6,13 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL-LOCAL")
+DATABASE_URL = os.getenv("DATABASE_URL_SEVALLA")
 
 ssl_context = ssl.create_default_context()
 
 engine = create_async_engine(
     DATABASE_URL,
     echo=True,
-    connect_args={"ssl": ssl_context}
 )
 
 async_session = sessionmaker(

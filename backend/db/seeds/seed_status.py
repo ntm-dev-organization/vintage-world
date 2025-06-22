@@ -20,3 +20,5 @@ async def seed_status():
 
 if __name__ == "__main__":
     asyncio.run(seed_status())
+
+#comando: python -m backend.db.seeds.seed_status
